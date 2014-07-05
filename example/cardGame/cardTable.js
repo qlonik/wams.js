@@ -18,7 +18,7 @@ var addClientHandler = function(ws, client) {
       tableWS.addClient(client);
 
       tableWS.setPixelDimension(client.shape.w, client.shape.h);
-      tableWS.appendStyle({ background: 'dark-green' });
+      tableWS.appendStyle({ background: 'darkGreen' });
 
 //      tableWS.on('drag', tableDrag);
 
