@@ -18,5 +18,13 @@ function Client(racer, socket) {
 util.merge(Client.prototype, EventEmitter.prototype);
 
 
+Client.prototype.equal = function(param) {
+   return !!(
+      (this.id === param) ||
+      (this.socket === param) ||
+      (param.id && (this.id === param.id)) ||
+      (param.socket && (this.socket === param.socket))
+      );
+};
 
 module.exports = Client;
