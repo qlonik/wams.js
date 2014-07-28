@@ -1,6 +1,16 @@
 var _ = require('lodash');
 
-var enableLodash = true;
+var isServer = process.title !== 'browser',
+   enableLodash = true,
+
+   RACER_PATH = 'wams',
+   SERVER_EVENTS = {
+      connectClient: 'client',
+      disconnectClient: 'clientDisconnect'
+   },
+   WORKSPACE_EVENTS = {},
+   WORKSPACE_OBJECT_EVENTS = {},
+   CLIENT_EVENTS = {};
 
 function notImplemented(func) {
    throw new Error('Function "' + func + '" not implemented');
@@ -30,4 +40,14 @@ forOwn(_, function (item, index, collection) {
 
    }
 });
+
+
+exports.isServer = isServer;
+exports.enableLodash = enableLodash;
+
+exports.RACER_PATH = RACER_PATH;
+exports.SERVER_EVENTS = SERVER_EVENTS;
+exports.WORKSPACE_EVENTS = WORKSPACE_EVENTS;
+exports.WORKSPACE_OBJECT_EVENTS = WORKSPACE_OBJECT_EVENTS;
+exports.CLIENT_EVENTS = CLIENT_EVENTS;
 
