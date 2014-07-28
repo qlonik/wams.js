@@ -58,6 +58,16 @@ function Serv(racer, opts) {
       });
 
    this.io = socket_io(this.srv);
+   this.io.on('connection', function(socket) {
+      logSocket('New client connected');
+      _this.sockets.push(socket);
+      _this.emit(SERVER_EVENTS.connectClient, null, socket);
+
+      socket.on('disconnect', function() {
+         util.remove(_this.sockets, socket);
+         _this.emit(SERVER_EVENTS.disconnectClient, null, socket);
+      });
+   });
 }
 
 util.merge(Serv.prototype, EventEmitter.prototype);
