@@ -8,9 +8,15 @@ var isServer = process.title !== 'browser',
       connectClient: 'client',
       disconnectClient: 'clientDisconnect'
    },
-   WORKSPACE_EVENTS = {},
+   WORKSPACE_EVENTS = {
+      clientConnected: 'newClient',
+      clientReady: 'readyClient',
+      clientDisconnected: 'disconnectClient'
+   },
    WORKSPACE_OBJECT_EVENTS = {},
-   CLIENT_EVENTS = {};
+   CLIENT_EVENTS = {
+      ready: 'clientReady'
+   };
 
 function notImplemented(func) {
    throw new Error('Function "' + func + '" not implemented');
