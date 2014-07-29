@@ -35,6 +35,7 @@ function Client(racer, socket) {
 
    this.clientModel = model.at(this.clientModelPath);
 
+   this.updateModel();
 }
 
 util.merge(Client.prototype, EventEmitter.prototype);
