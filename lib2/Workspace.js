@@ -18,10 +18,6 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    },
    TYPE = 'workspace';
 
-function extractID(el) {
-   return el.id;
-}
-
 function Workspace(racer, srv) {
    EventEmitter.call(this);
    this.racer = racer;
@@ -109,8 +105,8 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiff('id', _this.id);
          model.setDiff('type', _this.type);
          model.setDiffDeep('shape', _this.shape);
-         model.setArrayDiff('clients', util.map(_this.clients, extractID));
-         model.setArrayDiff('inner', util.map(_this.inner, extractID));
+         model.setArrayDiff('clients', util.map(_this.clients, util.getID));
+         model.setArrayDiff('inner', util.map(_this.inner, util.getID));
 
          model.setDiffDeep('html', _this.html);
       });
@@ -148,7 +144,7 @@ Workspace.prototype.addElement = function(el) {
    this.inner.push(el);
    this.html.inner.push(el.html);
 
-   this.updateModel('inner', util.map(this.inner, extractID));
+   this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
 };
 Workspace.prototype.removeElement = function(param) {
@@ -164,20 +160,20 @@ Workspace.prototype.removeElement = function(param) {
          );
    });
 
-   this.updateModel('inner', util.map(this.inner, extractID));
+   this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
 };
 Workspace.prototype.addClient = function(client) {
    this.clients.push(client);
 
-   this.updateModel('clients', util.map(this.clients, extractID));
+   this.updateModel('clients', util.map(this.clients, util.getID));
 };
 Workspace.prototype.removeClient = function(param) {
    var removed = util.remove(this.clients, function(client) {
       return client.equal(param)
    });
 
-   this.updateModel('clients', util.map(this.clients, extractID));
+   this.updateModel('clients', util.map(this.clients, util.getID));
 };
 
 module.exports = Workspace;

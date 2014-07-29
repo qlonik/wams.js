@@ -48,6 +48,11 @@ forOwn(_, function (item, index, collection) {
 });
 
 
+function getID(el) {
+   return el.id;
+}
+
+
 exports.isServer = isServer;
 exports.enableLodash = enableLodash;
 
@@ -57,3 +62,4 @@ exports.WORKSPACE_EVENTS = WORKSPACE_EVENTS;
 exports.WORKSPACE_OBJECT_EVENTS = WORKSPACE_OBJECT_EVENTS;
 exports.CLIENT_EVENTS = CLIENT_EVENTS;
 
+exports.getID = getID;
