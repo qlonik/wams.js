@@ -36,6 +36,9 @@ function Client(racer, socket) {
 
    this.clientModel = model.at(this.clientModelPath);
 
+   this.socket.on(SOCKET_EVENTS.disconnect, function() {
+      _this.cleanModel();
+   });
    this.socket.on(SOCKET_EVENTS.ready, function(err) {
       if (err) {
          _this.emit(CLIENT_EVENTS.ready, err);
@@ -101,6 +104,15 @@ Client.prototype.updateModel = function(path, value) {
    }
 
    model.unfetch();
+};
+Client.prototype.cleanModel = function() {
+   var model = this.clientModel;
+
+   model.fetch(function(err) {
+      if (err) { throw err; }
+
+      model.del();
+   });
 };
 Client.prototype.equal = function(param) {
    return !!(
