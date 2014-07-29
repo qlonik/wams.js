@@ -46,22 +46,31 @@ Client.prototype.updateModel = function(path, value) {
 
    if (!path) {
       model.fetch(function(err) {
-         if (err) { throw err; }
+         if (err) {
+            _this.emit(CLIENT_EVENTS.modelUpdated, err);
+         } else {
+            model.setDiff('id', _this.id);
+            model.setDiff('type', _this.type);
+            model.setDiff('clientReady', _this.clientReady);
+            model.setDiff('clientModelPath', _this.clientModelPath);
+            model.setDiffDeep('shape', _this.shape);
+            model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
 
-         model.setDiff('id', _this.id);
-         model.setDiff('type', _this.type);
-         model.setDiff('clientModelPath', _this.clientModelPath);
-         model.setDiffDeep('shape', _this.shape);
-         model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
+            _this.emit(CLIENT_EVENTS.modelUpdated, null);
+         }
       });
    } else {
       model.fetch(function (err) {
-         if (err) { throw err; }
-
-         if (util.isArray(value)) {
-            model.setArrayDiffDeep(path, value);
+         if (err) {
+            _this.emit(CLIENT_EVENTS.modelUpdated, err);
          } else {
-            model.setDiffDeep(path, value);
+            if (util.isArray(value)) {
+               model.setArrayDiffDeep(path, value);
+            } else {
+               model.setDiffDeep(path, value);
+            }
+
+            _this.emit(CLIENT_EVENTS.modelUpdated, null);
          }
       });
    }
