@@ -37,7 +37,6 @@ function Workspace(racer, srv) {
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
-   this.allConnectedClients = new StorageCreator();
    this.clients = [];
    this.inner = [];
 
@@ -63,6 +62,7 @@ util.merge(Workspace.prototype, EventEmitter.prototype);
 
 Workspace.prototype.attachServer = function(srv) {
    this.srv = srv;
+   this.allConnectedClients = new StorageCreator();
 
    var client,
       _this = this;
