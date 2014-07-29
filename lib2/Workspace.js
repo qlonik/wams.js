@@ -18,6 +18,10 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    },
    TYPE = 'workspace';
 
+function extractID(el) {
+   return el.id;
+}
+
 function Workspace(racer, srv) {
    EventEmitter.call(this);
    this.racer = racer;
@@ -37,6 +41,8 @@ function Workspace(racer, srv) {
    this.clients = [];
    this.inner = [];
 
+   this.workspaceModel = model.at(path + '.workspaces.' + this.id);
+
    this.html = {
       tag: 'div',
       attr: {
@@ -48,6 +54,8 @@ function Workspace(racer, srv) {
       },
       inner: []
    };
+
+   this.updateModel();
 }
 
 util.merge(Workspace.prototype, EventEmitter.prototype);
@@ -87,6 +95,35 @@ Workspace.prototype.attachServer = function(srv) {
          _this.emit(WORKSPACE_EVENTS.clientDisconnected, null, client);
       }
    });
+};
+Workspace.prototype.updateModel = function(path, value) {
+   var _this = this, model = this.workspaceModel;
+
+   if (!path) {
+      model.fetch(function(err) {
+         if (err) { throw err; }
+
+         model.setDiff('id', _this.id);
+         model.setDiff('type', _this.type);
+         model.setDiffDeep('shape', _this.shape);
+         model.setArrayDiff('clients', util.map(_this.clients, extractID));
+         model.setArrayDiff('inner', util.map(_this.inner, extractID));
+
+         model.setDiffDeep('html', _this.html);
+      });
+   } else {
+      model.fetch(function (err) {
+         if (err) { throw err; }
+
+         if (util.isArray(value)) {
+            model.setArrayDiffDeep(path, value);
+         } else {
+            model.setDiffDeep(path, value);
+         }
+      });
+   }
+
+   model.unfetch();
 };
 
 module.exports = Workspace;
