@@ -18,9 +18,13 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    },
    TYPE = 'workspace';
 
-function Workspace(racer) {
+function Workspace(racer, srv) {
    EventEmitter.call(this);
    this.racer = racer;
+
+   if (srv) {
+      this.attachServer(srv);
+   }
 
    var _this = this,
       model = racer.model,
@@ -54,7 +58,7 @@ Workspace.prototype.attachServer = function(srv) {
 
    var client,
       _this = this;
-   //srv listeners
+
    this.srv.on(SERVER_EVENTS.connectClient, function(err, socket) {
       if (err) {
          _this.emit(WORKSPACE_EVENTS.clientConnected, err);

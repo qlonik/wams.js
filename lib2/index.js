@@ -22,18 +22,14 @@ var atLeastOneServer = false,
    };
 
 function WAMS(port) {
-   var srv,
-      wrkspc = new Workspace(racerObj);
+   var srv, wrkspc;
 
    if (port || !atLeastOneServer) {
       srv = new Server(racerObj, port ? { port: port } : {});
       atLeastOneServer = true;
    }
 
-   if (srv) {
-      wrkspc.attachServer(srv);
-   }
-
+   wrkspc = new Workspace(racerObj, srv);
    return wrkspc;
 }
 
