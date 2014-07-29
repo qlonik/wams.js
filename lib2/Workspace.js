@@ -91,6 +91,9 @@ Workspace.prototype.attachServer = function(srv) {
          _this.emit(WORKSPACE_EVENTS.clientDisconnected, err);
       } else {
          client = _this.allConnectedClients.remove(socket);
+         if (client.length === 1) {
+            client = client[0];
+         }
 
          _this.emit(WORKSPACE_EVENTS.clientDisconnected, null, client);
       }
