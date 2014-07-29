@@ -36,6 +36,14 @@ function Client(racer, socket) {
 
    this.clientModel = model.at(this.clientModelPath);
 
+   this.socket.on(SOCKET_EVENTS.ready, function(err) {
+      if (err) {
+         _this.emit(CLIENT_EVENTS.ready, err);
+      } else {
+         _this.clientReady = true;
+         _this.emit(CLIENT_EVENTS.ready, null);
+      }
+   });
    this.on(CLIENT_EVENTS.modelUpdated, function(err) {
       if (err) { throw err; }
 
