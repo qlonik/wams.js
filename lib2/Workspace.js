@@ -128,5 +128,56 @@ Workspace.prototype.updateModel = function(path, value) {
 
    model.unfetch();
 };
+Workspace.prototype.equal = function(workspace) {
+   return !!(
+      (this.id === workspace) ||
+      (workspace.id && (this.id === workspace.id))
+      );
+};
+Workspace.prototype.mergeShape = function(newShape) {
+   util.merge(this.shape, newShape);
+
+   this.updateModel('shape', this.shape);
+};
+Workspace.prototype.mergeStyle = function(newStyle) {
+   util.merge(this.html.style, newStyle);
+
+   this.updateModel('html.style', this.html.style);
+};
+Workspace.prototype.addElement = function(el) {
+   this.inner.push(el);
+   this.html.inner.push(el.html);
+
+   this.updateModel('inner', util.map(this.inner, extractID));
+   this.updateModel('html.inner', this.html.inner);
+};
+Workspace.prototype.removeElement = function(param) {
+   //remove from inner array
+   util.remove(this.inner, function(el) {
+      return el.equal(param);
+   });
+   //remove from html object
+   util.remove(this.html.inner, function(el) {
+      return !!(
+         (param === el.attr.id) ||
+         (param.id && (param.id === el.attr.id))
+         );
+   });
+
+   this.updateModel('inner', util.map(this.inner, extractID));
+   this.updateModel('html.inner', this.html.inner);
+};
+Workspace.prototype.addClient = function(client) {
+   this.clients.push(client);
+
+   this.updateModel('clients', util.map(this.clients, extractID));
+};
+Workspace.prototype.removeClient = function(param) {
+   var removed = util.remove(this.clients, function(client) {
+      return client.equal(param)
+   });
+
+   this.updateModel('clients', util.map(this.clients, extractID));
+};
 
 module.exports = Workspace;
