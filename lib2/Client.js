@@ -29,11 +29,28 @@ function Client(racer, socket) {
 
    this.id = model.id();
    this.type = TYPE;
+   this.clientReady = false;
    this.clientModelPath = path + '.clients.' + this.id;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.workspaces = [];
 
    this.clientModel = model.at(this.clientModelPath);
+
+   this.on(CLIENT_EVENTS.modelUpdated, function(err) {
+      if (err) { throw err; }
+
+      if (!this.clientReady) {
+         model.bundle(function (err, b) {
+            if (err) { throw err; }
+
+            _this.socket.emit(SOCKET_EVENTS.racerBundle, null, {
+               id: _this.id,
+               bundle: b,
+               path: path
+            });
+         });
+      }
+   });
 
    this.updateModel();
 }
