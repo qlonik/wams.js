@@ -74,38 +74,28 @@ Client.prototype.updateModel = function(path, value) {
       mainModel = this.racer.model, mainPath = this.racer.path,
       model = this.clientModel;
 
-   if (!path) {
-      mainModel.fetch(mainPath, function(err) {
-         if (err) {
-            _this.emit(CLIENT_EVENTS.modelUpdated, err);
-         } else {
+   mainModel.fetch(mainPath, function(err) {
+      if (err) {
+         _this.emit(CLIENT_EVENTS.modelUpdated, err);
+      } else {
+         if (!path) {
             model.setDiff('id', _this.id);
             model.setDiff('type', _this.type);
             model.setDiff('clientReady', _this.clientReady);
             model.setDiff('clientModelPath', _this.clientModelPath);
             model.setDiffDeep('shape', _this.shape);
             model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
-
-            _this.emit(CLIENT_EVENTS.modelUpdated, null);
-         }
-      });
-   } else {
-      mainModel.fetch(mainPath, function (err) {
-         if (err) {
-            _this.emit(CLIENT_EVENTS.modelUpdated, err);
          } else {
             if (util.isArray(value)) {
                model.setArrayDiffDeep(path, value);
             } else {
                model.setDiffDeep(path, value);
             }
-
-            _this.emit(CLIENT_EVENTS.modelUpdated, null);
          }
-      });
-   }
 
-   mainModel.unfetch();
+         _this.emit(CLIENT_EVENTS.modelUpdated, null);
+      }
+   });
 };
 Client.prototype.cleanModel = function() {
    var model = this.clientModel;

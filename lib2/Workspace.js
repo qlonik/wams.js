@@ -100,10 +100,10 @@ Workspace.prototype.updateModel = function(path, value) {
       mainModel = this.racer.model, mainPath = this.racer.path,
       model = this.workspaceModel;
 
-   if (!path) {
-      mainModel.fetch(mainPath, function(err) {
-         if (err) { throw err; }
+   mainModel.fetch(mainPath, function(err) {
+      if (err) { throw err; }
 
+      if (!path) {
          model.setDiff('id', _this.id);
          model.setDiff('type', _this.type);
          model.setDiffDeep('shape', _this.shape);
@@ -111,20 +111,14 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setArrayDiff('inner', util.map(_this.inner, util.getID));
 
          model.setDiffDeep('html', _this.html);
-      });
-   } else {
-      mainModel.fetch(mainPath, function (err) {
-         if (err) { throw err; }
-
+      } else {
          if (util.isArray(value)) {
             model.setArrayDiffDeep(path, value);
          } else {
             model.setDiffDeep(path, value);
          }
-      });
-   }
-
-   mainModel.unfetch();
+      }
+   });
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(
