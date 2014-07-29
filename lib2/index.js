@@ -1,5 +1,5 @@
 var liveDbMongo = require('livedb-mongo'),
-   redis = require('redis').createClient(),
+   redis = require('redis'),
    racer = require('racer'),
 
    util = require('./util'),
@@ -11,7 +11,7 @@ var liveDbMongo = require('livedb-mongo'),
 var atLeastOneServer = false,
    store = racer.createStore({
       db: liveDbMongo('localhost:27017/wams?auto_reconnect', { safe: true }),
-      redis: redis
+      redis: redis.createClient()
    }),
    model = store.createModel(),
    path = util.RACER_PATH,
