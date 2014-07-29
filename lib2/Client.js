@@ -40,6 +40,33 @@ function Client(racer, socket) {
 util.merge(Client.prototype, EventEmitter.prototype);
 
 
+Client.prototype.updateModel = function(path, value) {
+   var _this = this, model = this.clientModel;
+
+   if (!path) {
+      model.fetch(function(err) {
+         if (err) { throw err; }
+
+         model.setDiff('id', _this.id);
+         model.setDiff('type', _this.type);
+         model.setDiff('clientModelPath', _this.clientModelPath);
+         model.setDiffDeep('shape', _this.shape);
+         model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
+      });
+   } else {
+      model.fetch(function (err) {
+         if (err) { throw err; }
+
+         if (util.isArray(value)) {
+            model.setArrayDiffDeep(path, value);
+         } else {
+            model.setDiffDeep(path, value);
+         }
+      });
+   }
+
+   model.unfetch();
+};
 Client.prototype.equal = function(param) {
    return !!(
       (this.id === param) ||
