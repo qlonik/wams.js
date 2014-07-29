@@ -96,10 +96,12 @@ Workspace.prototype.attachServer = function(srv) {
    });
 };
 Workspace.prototype.updateModel = function(path, value) {
-   var _this = this, model = this.workspaceModel;
+   var _this = this,
+      mainModel = this.racer.model, mainPath = this.racer.path,
+      model = this.workspaceModel;
 
    if (!path) {
-      model.fetch(function(err) {
+      mainModel.fetch(mainPath, function(err) {
          if (err) { throw err; }
 
          model.setDiff('id', _this.id);
@@ -111,7 +113,7 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiffDeep('html', _this.html);
       });
    } else {
-      model.fetch(function (err) {
+      mainModel.fetch(mainPath, function (err) {
          if (err) { throw err; }
 
          if (util.isArray(value)) {
@@ -122,7 +124,7 @@ Workspace.prototype.updateModel = function(path, value) {
       });
    }
 
-   model.unfetch();
+   mainModel.unfetch();
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(

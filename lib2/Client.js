@@ -70,10 +70,12 @@ util.merge(Client.prototype, EventEmitter.prototype);
 
 
 Client.prototype.updateModel = function(path, value) {
-   var _this = this, model = this.clientModel;
+   var _this = this,
+      mainModel = this.racer.model, mainPath = this.racer.path,
+      model = this.clientModel;
 
    if (!path) {
-      model.fetch(function(err) {
+      mainModel.fetch(mainPath, function(err) {
          if (err) {
             _this.emit(CLIENT_EVENTS.modelUpdated, err);
          } else {
@@ -88,7 +90,7 @@ Client.prototype.updateModel = function(path, value) {
          }
       });
    } else {
-      model.fetch(function (err) {
+      mainModel.fetch(mainPath, function (err) {
          if (err) {
             _this.emit(CLIENT_EVENTS.modelUpdated, err);
          } else {
@@ -103,7 +105,7 @@ Client.prototype.updateModel = function(path, value) {
       });
    }
 
-   model.unfetch();
+   mainModel.unfetch();
 };
 Client.prototype.cleanModel = function() {
    var model = this.clientModel;
