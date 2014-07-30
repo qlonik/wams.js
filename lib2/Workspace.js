@@ -36,6 +36,7 @@ function Workspace(racer, srv) {
    this.clients = [];
    this.inner = [];
 
+   this.modelReady = false;
    this.workspaceModelPath = path + '.workspaces.' + this.id;
    this.workspaceModel = model.at(this.workspaceModelPath);
 
@@ -50,6 +51,13 @@ function Workspace(racer, srv) {
       },
       inner: []
    };
+
+   model.fetch(path, function(err) {
+      if (!err) {
+         _this.modelReady = true;
+      }
+      _this.emit(WORKSPACE_EVENTS.modelFetched, err);
+   });
 
    this.updateModel();
 }
@@ -98,11 +106,11 @@ Workspace.prototype.attachServer = function(srv) {
 };
 Workspace.prototype.updateModel = function(path, value) {
    var _this = this,
-      mainModel = this.racer.model, mainPath = this.racer.path,
+//      mainModel = this.racer.model, mainPath = this.racer.path,
       model = this.workspaceModel;
 
-   mainModel.fetch(mainPath, function(err) {
-      if (err) { throw err; }
+//   mainModel.fetch(mainPath, function(err) {
+//      if (err) { throw err; }
 
       if (!path) {
          model.setDiff('id', _this.id);
@@ -119,7 +127,7 @@ Workspace.prototype.updateModel = function(path, value) {
             model.setDiffDeep(path, value);
          }
       }
-   });
+//   });
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(

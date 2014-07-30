@@ -11,7 +11,8 @@ var isServer = process.title !== 'browser',
    WORKSPACE_EVENTS = {
       clientConnected: 'newClient',
       clientReady: 'readyClient',
-      clientDisconnected: 'disconnectClient'
+      clientDisconnected: 'disconnectClient',
+      modelFetched: 'modelFetched'
    },
    WORKSPACE_OBJECT_EVENTS = {},
    CLIENT_EVENTS = {
