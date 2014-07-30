@@ -30,6 +30,7 @@ function Client(racer, socket) {
    this.id = model.id();
    this.type = TYPE;
    this.clientReady = false;
+   this.modelReady = false;
    this.clientModelPath = path + '.clients.' + this.id;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.workspaces = [];
@@ -38,6 +39,12 @@ function Client(racer, socket) {
 
    this.socket.on(SOCKET_EVENTS.disconnect, function() {
       _this.cleanModel();
+   });
+   model.fetch(path, function(err) {
+      if (!err) {
+         _this.modelReady = true;
+      }
+      _this.emit(CLIENT_EVENTS.modelFetched, err);
    });
    this.socket.on(SOCKET_EVENTS.ready, function(err) {
       if (err) {
@@ -74,10 +81,10 @@ Client.prototype.updateModel = function(path, value) {
       mainModel = this.racer.model, mainPath = this.racer.path,
       model = this.clientModel;
 
-   mainModel.fetch(mainPath, function(err) {
-      if (err) {
-         _this.emit(CLIENT_EVENTS.modelUpdated, err);
-      } else {
+//   mainModel.fetch(mainPath, function(err) {
+//      if (err) {
+//         _this.emit(CLIENT_EVENTS.modelUpdated, err);
+//      } else {
          if (!path) {
             model.setDiff('id', _this.id);
             model.setDiff('type', _this.type);
@@ -94,17 +101,17 @@ Client.prototype.updateModel = function(path, value) {
          }
 
          _this.emit(CLIENT_EVENTS.modelUpdated, null);
-      }
-   });
+//      }
+//   });
 };
 Client.prototype.cleanModel = function() {
    var model = this.clientModel;
 
-   model.fetch(function(err) {
-      if (err) { throw err; }
+//   model.fetch(function(err) {
+//      if (err) { throw err; }
 
       model.del();
-   });
+//   });
 };
 Client.prototype.equal = function(param) {
    return !!(
