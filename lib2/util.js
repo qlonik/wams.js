@@ -15,8 +15,22 @@ var isServer = process.title !== 'browser',
    },
    WORKSPACE_OBJECT_EVENTS = {},
    CLIENT_EVENTS = {
-      ready: 'clientReady'
-   };
+      ready: 'clientReady',
+      modelFetched: 'modelFetched',
+      modelUpdated: 'modelUpdated'
+   },
+   SOCKET_EVENTS = {
+      disconnect: 'disconnect',
+      racerBundle: 'racerBundle',
+      ready: 'ready'
+   },
+   HAMMER_EVENTS = [
+      'hold', 'tap', 'doubletap', 'drag', 'dragstart', 'dragend', 'dragup',
+      'dragdown', 'dragleft', 'dragright', 'swipe', 'swipeup', 'swipedown',
+      'swipeleft', 'swiperight', 'transform', 'transformstart', 'transformend',
+      'rotate', 'pinch', 'pinchin', 'pinchout', 'touch', 'release', 'gesture'
+   ],
+   BROWSER_EVENTS = {};
 
 function notImplemented(func) {
    throw new Error('Function "' + func + '" not implemented');
@@ -61,5 +75,8 @@ exports.SERVER_EVENTS = SERVER_EVENTS;
 exports.WORKSPACE_EVENTS = WORKSPACE_EVENTS;
 exports.WORKSPACE_OBJECT_EVENTS = WORKSPACE_OBJECT_EVENTS;
 exports.CLIENT_EVENTS = CLIENT_EVENTS;
+exports.SOCKET_EVENTS = SOCKET_EVENTS;
+exports.HAMMER_EVENTS = HAMMER_EVENTS;
+exports.BROWSER_EVENTS = BROWSER_EVENTS;
 
 exports.getID = getID;
