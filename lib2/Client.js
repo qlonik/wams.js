@@ -54,23 +54,9 @@ function Client(racer, socket) {
          _this.emit(CLIENT_EVENTS.ready, null);
       }
    });
-   this.on(CLIENT_EVENTS.modelUpdated, function(err) {
-      if (err) { throw err; }
-
-      if (!this.clientReady) {
-         model.bundle(function (err, b) {
-            if (err) { throw err; }
-
-            _this.socket.emit(SOCKET_EVENTS.racerBundle, null, {
-               id: _this.id,
-               bundle: b,
-               path: path
-            });
-         });
-      }
-   });
 
    this.updateModel();
+   this.sendModel();
 }
 
 util.merge(Client.prototype, EventEmitter.prototype);
@@ -112,6 +98,23 @@ Client.prototype.cleanModel = function() {
 
       model.del();
 //   });
+};
+Client.prototype.sendModel = function() {
+   var _this = this,
+      mainModel = this.racer.model, mainPath = this.racer.path;
+
+   mainModel.bundle(function (err, b) {
+      if (err) {
+         _this.socket.emit(SOCKET_EVENTS.racerBundle, err);
+         throw err;
+      }
+
+      _this.socket.emit(SOCKET_EVENTS.racerBundle, null, {
+         id: _this.id,
+         bundle: b,
+         path: mainPath
+      });
+   });
 };
 Client.prototype.equal = function(param) {
    return !!(
