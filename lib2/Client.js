@@ -72,8 +72,6 @@ Client.prototype.updateModel = function(path, value) {
          if (!path) {
             model.setDiff('id', _this.id);
             model.setDiff('type', _this.type);
-            model.setDiff('clientReady', _this.clientReady);
-            model.setDiff('clientModelPath', _this.clientModelPath);
             model.setDiffDeep('shape', _this.shape);
             model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
          } else {
