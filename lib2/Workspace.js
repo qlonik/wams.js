@@ -59,7 +59,11 @@ function Workspace(racer, srv) {
       _this.emit(WORKSPACE_EVENTS.modelFetched, err);
    });
 
-   this.updateModel();
+   this.on(WORKSPACE_EVENTS.modelFetched, function(err) {
+      if (err) { throw err; }
+
+      this.updateModel();
+   });
 }
 
 util.merge(Workspace.prototype, EventEmitter.prototype);
