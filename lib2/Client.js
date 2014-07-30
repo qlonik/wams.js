@@ -47,12 +47,10 @@ function Client(racer, socket) {
       _this.emit(CLIENT_EVENTS.modelFetched, err);
    });
    this.socket.on(SOCKET_EVENTS.ready, function(err) {
-      if (err) {
-         _this.emit(CLIENT_EVENTS.ready, err);
-      } else {
+      if (!err) {
          _this.clientReady = true;
-         _this.emit(CLIENT_EVENTS.ready, null);
       }
+      _this.emit(CLIENT_EVENTS.ready, err);
    });
 
    this.updateModel();
