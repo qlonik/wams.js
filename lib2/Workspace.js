@@ -36,7 +36,8 @@ function Workspace(racer, srv) {
    this.clients = [];
    this.inner = [];
 
-   this.workspaceModel = model.at(path + '.workspaces.' + this.id);
+   this.workspaceModelPath = path + '.workspaces.' + this.id;
+   this.workspaceModel = model.at(this.workspaceModelPath);
 
    this.html = {
       tag: 'div',
