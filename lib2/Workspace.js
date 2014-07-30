@@ -105,29 +105,23 @@ Workspace.prototype.attachServer = function(srv) {
    });
 };
 Workspace.prototype.updateModel = function(path, value) {
-   var _this = this,
-//      mainModel = this.racer.model, mainPath = this.racer.path,
-      model = this.workspaceModel;
+   var _this = this, model = this.workspaceModel;
 
-//   mainModel.fetch(mainPath, function(err) {
-//      if (err) { throw err; }
+   if (!path) {
+      model.setDiff('id', _this.id);
+      model.setDiff('type', _this.type);
+      model.setDiffDeep('shape', _this.shape);
+      model.setArrayDiff('clients', util.map(_this.clients, util.getID));
+      model.setArrayDiff('inner', util.map(_this.inner, util.getID));
 
-      if (!path) {
-         model.setDiff('id', _this.id);
-         model.setDiff('type', _this.type);
-         model.setDiffDeep('shape', _this.shape);
-         model.setArrayDiff('clients', util.map(_this.clients, util.getID));
-         model.setArrayDiff('inner', util.map(_this.inner, util.getID));
-
-         model.setDiffDeep('html', _this.html);
+      model.setDiffDeep('html', _this.html);
+   } else {
+      if (util.isArray(value)) {
+         model.setArrayDiffDeep(path, value);
       } else {
-         if (util.isArray(value)) {
-            model.setArrayDiffDeep(path, value);
-         } else {
-            model.setDiffDeep(path, value);
-         }
+         model.setDiffDeep(path, value);
       }
-//   });
+   }
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(
