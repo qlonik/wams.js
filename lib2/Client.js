@@ -29,17 +29,14 @@ function Client(racer, socket) {
 
    this.id = model.id();
    this.type = TYPE;
-   this.clientReady = false;
-   this.modelReady = false;
-   this.clientModelPath = path + '.clients.' + this.id;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.workspaces = [];
 
+   this.clientReady = false;
+   this.modelReady = false;
+   this.clientModelPath = path + '.clients.' + this.id;
    this.clientModel = model.at(this.clientModelPath);
 
-   this.socket.on(SOCKET_EVENTS.disconnect, function() {
-      _this.cleanModel();
-   });
    model.fetch(path, function(err) {
       if (!err) {
          _this.modelReady = true;
@@ -52,6 +49,9 @@ function Client(racer, socket) {
       }
       _this.emit(CLIENT_EVENTS.ready, err);
    });
+   this.socket.on(SOCKET_EVENTS.disconnect, function() {
+      _this.cleanModel();
+   });
 
    this.updateModel();
    this.sendModel();
@@ -61,39 +61,27 @@ util.merge(Client.prototype, EventEmitter.prototype);
 
 
 Client.prototype.updateModel = function(path, value) {
-   var _this = this,
-      mainModel = this.racer.model, mainPath = this.racer.path,
-      model = this.clientModel;
+   var _this = this, model = this.clientModel;
 
-//   mainModel.fetch(mainPath, function(err) {
-//      if (err) {
-//         _this.emit(CLIENT_EVENTS.modelUpdated, err);
-//      } else {
-         if (!path) {
-            model.setDiff('id', _this.id);
-            model.setDiff('type', _this.type);
-            model.setDiffDeep('shape', _this.shape);
-            model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
-         } else {
-            if (util.isArray(value)) {
-               model.setArrayDiffDeep(path, value);
-            } else {
-               model.setDiffDeep(path, value);
-            }
-         }
+   if (!path) {
+      model.setDiff('id', _this.id);
+      model.setDiff('type', _this.type);
+      model.setDiffDeep('shape', _this.shape);
+      model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
+   } else {
+      if (util.isArray(value)) {
+         model.setArrayDiffDeep(path, value);
+      } else {
+         model.setDiffDeep(path, value);
+      }
+   }
 
-         _this.emit(CLIENT_EVENTS.modelUpdated, null);
-//      }
-//   });
+   _this.emit(CLIENT_EVENTS.modelUpdated, null);
 };
 Client.prototype.cleanModel = function() {
    var model = this.clientModel;
 
-//   model.fetch(function(err) {
-//      if (err) { throw err; }
-
-      model.del();
-//   });
+   model.del();
 };
 Client.prototype.sendModel = function() {
    var _this = this,
