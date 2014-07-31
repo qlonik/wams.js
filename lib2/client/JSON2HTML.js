@@ -16,7 +16,7 @@ Objects that are accepted:
       class: String|[String, String, ...],
       style: String|[String, String, ...],
       custom: String|[String, String, ...],
-      data-custom: String,
+      data-custom: String|[String, String, ...],
       ...
    },
    style: {
@@ -25,10 +25,24 @@ Objects that are accepted:
       key: String,
       ...
    },
-   inner: String|{...}|[{...}, {...}, ...]
+   inner: String|{...}|[String|{...}, String|{...}, ...]
 }
 or
-[{...}, {...}, {...}, ...]
+{
+   data: String|{...}|[String|{...}, String|{...}, ...],
+   opts: {
+      tag: String,
+      attr: String,
+      style: String,
+      inner: String
+   }
+}
+or
+[
+   String|{...},
+   String|{...},
+   ...
+]
 
 tag is required,
 attr is optional
