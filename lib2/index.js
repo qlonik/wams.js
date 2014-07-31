@@ -50,15 +50,14 @@ process.on('SIGINT', function() {
 });
 
 function WAMS(port) {
-   var srv, wrkspc;
+   var srv;
 
    if (port || !atLeastOneServer) {
       srv = new Server(racerObj, port ? { port: port } : {});
       atLeastOneServer = true;
    }
 
-   wrkspc = new Workspace(racerObj, srv);
-   return wrkspc;
+   return new Workspace(racerObj, srv);
 }
 
 WAMS._Server = Server;
