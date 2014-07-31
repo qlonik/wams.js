@@ -35,6 +35,13 @@ inner is optional
    inner can be String or HTMLString or it can have the same structure as main json
  */
 
+function parseHTMLString(metadata) {
+   var tmpDiv = document.createElement('div');
+   tmpDiv.innerHTML = metadata;
+
+   return Array.prototype.slice.call(tmpDiv.childNodes);
+}
+
 /**
  * Takes one json object and returns one html element
  * @param metadata
@@ -42,6 +49,9 @@ inner is optional
  * @returns {[]}
  */
 function createAndPopulateNode(metadata, opts) {
+   if (util.isString(metadata)) {
+      return parseHTMLString(metadata);
+   } else {
       var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
          node = document.createElement(metadata[tag]);
 
@@ -67,15 +77,14 @@ function createAndPopulateNode(metadata, opts) {
          });
       }
 
-      if (util.isString(metadata[inner])) {
-         node.innerHTML = metadata[inner];
-      } else if (util.isPlainObject(metadata[inner])) {
-         createAndAppendChild(metadata[inner]);
-      } else if (util.isArray(metadata[inner])) {
+      if (util.isArray(metadata[inner])) {
          util.forEach(metadata[inner], createAndAppendChild);
+      } else {
+         createAndAppendChild(metadata[inner]);
       }
 
       return [node];
+   }
 }
 
 function JSON2HTML(json, opts) {
