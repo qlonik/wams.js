@@ -1,4 +1,6 @@
-var liveDbMongo = require('livedb-mongo'),
+var readline = require('readline'),
+
+   liveDbMongo = require('livedb-mongo'),
    redis = require('redis'),
    racer = require('racer'),
 
@@ -20,6 +22,32 @@ var atLeastOneServer = false,
       model: model,
       path: path
    };
+
+function cleanModel() {
+   model.del(path + '.clients');
+   model.del(path + '.workspaces');
+}
+
+// graceful shutdown on windows
+if (process.platform === 'win32') {
+   var rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+   });
+
+   rl.on('SIGINT', function() {
+      process.emit('SIGINT');
+   });
+}
+
+//clean model on exit
+process.on('SIGINT', function() {
+   cleanModel();
+
+   model.unfetch(path, function() {
+      process.exit();
+   });
+});
 
 function WAMS(port) {
    var srv, wrkspc;
