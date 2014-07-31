@@ -1,5 +1,12 @@
 var util = require('../util');
 
+var DEFAULT_OPTS = {
+   tag: 'tag',
+   attr: 'attr',
+   style: 'style',
+   inner: 'inner'
+};
+
 /*
 Objects that are accepted:
 {
@@ -88,20 +95,38 @@ function createAndPopulateNode(metadata, opts) {
 }
 
 function JSON2HTML(json, opts) {
-   if (util.isString(json)) {
-      json = JSON.parse(json);
+   var data = {}, settings = {}, convertedNode,
+      result = [];
+
+   data = json.data || json || data;
+   util.defaults(settings, opts, json.opts, DEFAULT_OPTS);
+
+   if (util.isString(data)) {
+      try {
+         data = JSON.parse(data);
+      } catch (e) {
+         if (!(e instanceof SyntaxError)) {
+            throw e;
+         }
+      }
    }
 
-   var nodes;
-   if (util.isPlainObject(json)) {
-      nodes = createAndPopulateNode(json);
-   } else if (util.isArray(json)) {
-      util.forEach(json, function (tag) {
-         nodes = util.elemOrArray(nodes, createAndPopulateNode(tag));
-      });
+   if (util.isEmpty(data)) {
+      return [];
    }
 
-   return nodes;
+   function convertAndPush(el) {
+      convertedNode = createAndPopulateNode(el, settings);
+      Array.prototype.push.apply(result, convertedNode);
+   }
+
+   if (util.isArray(data)) {
+      util.forEach(data, convertAndPush);
+   } else {
+      convertAndPush(data);
+   }
+
+   return result;
 }
 
 module.exports = exports = JSON2HTML;
