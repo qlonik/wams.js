@@ -1,6 +1,4 @@
-var _ = require('lodash'),
-
-   util = require('../util');
+var util = require('../util');
 
 /*
 Objects that are accepted:
@@ -45,17 +43,17 @@ inner is optional
 function createAndPopulateNode(metadata) {
    var node = document.createElement(metadata.tag);
 
-   if (_.isPlainObject(metadata.attr)) {
-      _.forOwn(metadata.attr, function (value, key) {
-         if (_.isArray(value)) {
+   if (util.isPlainObject(metadata.attr)) {
+      util.forOwn(metadata.attr, function (value, key) {
+         if (util.isArray(value)) {
             value = value.join(' ');
          }
          node.setAttribute(key, value);
       });
    }
 
-   if (_.isPlainObject(metadata.style)) {
-      _.forOwn(metadata.style, function (value, key) {
+   if (util.isPlainObject(metadata.style)) {
+      util.forOwn(metadata.style, function (value, key) {
          node.style[key] = value;
       });
    }
@@ -65,27 +63,27 @@ function createAndPopulateNode(metadata) {
       node.appendChild(childNode);
    }
 
-   if (_.isString(metadata.inner)) {
+   if (util.isString(metadata.inner)) {
       node.innerHTML = metadata.inner;
-   } else if (_.isPlainObject(metadata.inner)) {
+   } else if (util.isPlainObject(metadata.inner)) {
       createAndAppendChild(metadata.inner);
-   } else if (_.isArray(metadata.inner)) {
-      _.forEach(metadata.inner, createAndAppendChild);
+   } else if (util.isArray(metadata.inner)) {
+      util.forEach(metadata.inner, createAndAppendChild);
    }
 
    return node;
 }
 
 function JSON2HTML(json, opts) {
-   if (_.isString(json)) {
+   if (util.isString(json)) {
       json = JSON.parse(json);
    }
 
    var nodes;
-   if (_.isPlainObject(json)) {
+   if (util.isPlainObject(json)) {
       nodes = createAndPopulateNode(json);
-   } else if (_.isArray(json)) {
-      _.forEach(json, function (tag) {
+   } else if (util.isArray(json)) {
+      util.forEach(json, function (tag) {
          nodes = util.elemOrArray(nodes, createAndPopulateNode(tag));
       });
    }

@@ -1,6 +1,4 @@
-var _ = require('lodash'),
-
-   util = require('../util');
+var util = require('../util');
 
 /*
 Accepted: regular HTML objects or jQuery objects
@@ -45,7 +43,7 @@ function removeAllChildren(html) {
       }
    }
 
-   return _.difference(html, _.uniq(toDelete));
+   return util.difference(html, util.uniq(toDelete));
 }
 
 /**
@@ -60,7 +58,7 @@ function createJSON(html) {
 
    if (html.attributes.length) {
       result.attr = {};
-      _.forEach(html.attributes, function (value) {
+      util.forEach(html.attributes, function (value) {
          result.attr[value.nodeName] = value.nodeValue;
 
          if (value.nodeName === 'class' &&
@@ -72,13 +70,13 @@ function createJSON(html) {
 
    if (html.style.length) {
       result.style = {};
-      _.forEach(html.style, function (value) {
+      util.forEach(html.style, function (value) {
          result.style[value] = html.style[value];
       });
    }
 
    if (html.children.length) {
-      _.forEach(html.children, function (childNode) {
+      util.forEach(html.children, function (childNode) {
          result.inner = util.elemOrArray(result.inner, createJSON(childNode));
       });
    } else {
@@ -89,7 +87,7 @@ function createJSON(html) {
 }
 
 function HTML2JSON(html) {
-   if (_.isString(html)) {
+   if (util.isString(html)) {
       var div = document.createElement('div');
       div.innerHTML = html;
       html = div.children;
@@ -98,7 +96,7 @@ function HTML2JSON(html) {
 
    if (html.length) {
       html = removeAllChildren(html);
-      _.forEach(html, function (tag) {
+      util.forEach(html, function (tag) {
          json = util.elemOrArray(json, createJSON(tag));
       });
    } else {
