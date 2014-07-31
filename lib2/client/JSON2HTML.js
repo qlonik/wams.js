@@ -39,7 +39,7 @@ inner is optional
  * Takes one json object and returns one html element
  * @param metadata
  * @param opts
- * @returns {HTMLElement}
+ * @returns {[]}
  */
 function createAndPopulateNode(metadata, opts) {
       var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
@@ -62,7 +62,9 @@ function createAndPopulateNode(metadata, opts) {
 
       function createAndAppendChild(child) {
          var childNode = createAndPopulateNode(child, opts);
-         node.appendChild(childNode);
+         util.forEach(childNode, function(el) {
+            node.appendChild(el);
+         });
       }
 
       if (util.isString(metadata[inner])) {
@@ -73,7 +75,7 @@ function createAndPopulateNode(metadata, opts) {
          util.forEach(metadata[inner], createAndAppendChild);
       }
 
-      return node;
+      return [node];
 }
 
 function JSON2HTML(json, opts) {
