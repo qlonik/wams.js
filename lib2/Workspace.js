@@ -139,6 +139,11 @@ Workspace.prototype.mergeStyle = function(newStyle) {
 
    this.updateModel('html.style', this.html.style);
 };
+Workspace.prototype.mergeAttr = function(newAttr) {
+   util.merge(this.html.attr, newAttr);
+
+   this.updateModel('html.attr', this.html.attr);
+};
 Workspace.prototype.addElement = function(el) {
    this.inner.push(el);
    this.html.inner.push(el.html);
