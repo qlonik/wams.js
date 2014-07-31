@@ -56,6 +56,11 @@ inner is optional
    inner can be String or HTMLString or it can have the same structure as main json
  */
 
+/**
+ * Convert {@link String} into html element
+ * @param {String} metadata String to convert
+ * @returns {Array} Array of html elements
+ */
 function parseHTMLString(metadata) {
    var tmpDiv = document.createElement('div');
    tmpDiv.innerHTML = metadata;
@@ -64,10 +69,10 @@ function parseHTMLString(metadata) {
 }
 
 /**
- * Takes one json object and returns one html element
- * @param metadata
- * @param opts
- * @returns {[]}
+ * Takes one String, Object or Array and return Array of html elements
+ * @param {String|Object|Array} metadata Input object
+ * @param {{tag:String, attr:String, style:String, inner:String}} opts Options of this object
+ * @returns {[]} Array of html elements
  */
 function createAndPopulateNode(metadata, opts) {
    if (util.isString(metadata)) {
@@ -108,6 +113,13 @@ function createAndPopulateNode(metadata, opts) {
    }
 }
 
+/**
+ * Take json structure and convert to array of html elements
+ * @param {String|Object|Array} json Structure to convert
+ * @param {Object} opts Options for this converter
+ * @returns {Array} Array of html elements
+ * @constructor
+ */
 function JSON2HTML(json, opts) {
    var data = {}, settings = {}, convertedNode,
       result = [];
