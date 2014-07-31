@@ -42,38 +42,38 @@ inner is optional
  * @returns {HTMLElement}
  */
 function createAndPopulateNode(metadata, opts) {
-   var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
-      node = document.createElement(metadata[tag]);
+      var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
+         node = document.createElement(metadata[tag]);
 
-   if (util.isPlainObject(metadata[attr])) {
-      util.forOwn(metadata[attr], function (value, key) {
-         if (util.isArray(value)) {
-            value = value.join(' ');
-         }
-         node.setAttribute(key, value);
-      });
-   }
+      if (util.isPlainObject(metadata[attr])) {
+         util.forOwn(metadata[attr], function (value, key) {
+            if (util.isArray(value)) {
+               value = value.join(' ');
+            }
+            node.setAttribute(key, value);
+         });
+      }
 
-   if (util.isPlainObject(metadata[style])) {
-      util.forOwn(metadata[style], function (value, key) {
-         node.style[key] = value;
-      });
-   }
+      if (util.isPlainObject(metadata[style])) {
+         util.forOwn(metadata[style], function (value, key) {
+            node.style[key] = value;
+         });
+      }
 
-   function createAndAppendChild(child) {
-      var childNode = createAndPopulateNode(child, opts);
-      node.appendChild(childNode);
-   }
+      function createAndAppendChild(child) {
+         var childNode = createAndPopulateNode(child, opts);
+         node.appendChild(childNode);
+      }
 
-   if (util.isString(metadata[inner])) {
-      node.innerHTML = metadata[inner];
-   } else if (util.isPlainObject(metadata[inner])) {
-      createAndAppendChild(metadata[inner]);
-   } else if (util.isArray(metadata[inner])) {
-      util.forEach(metadata[inner], createAndAppendChild);
-   }
+      if (util.isString(metadata[inner])) {
+         node.innerHTML = metadata[inner];
+      } else if (util.isPlainObject(metadata[inner])) {
+         createAndAppendChild(metadata[inner]);
+      } else if (util.isArray(metadata[inner])) {
+         util.forEach(metadata[inner], createAndAppendChild);
+      }
 
-   return node;
+      return node;
 }
 
 function JSON2HTML(json, opts) {
