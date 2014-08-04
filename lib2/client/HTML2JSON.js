@@ -11,7 +11,7 @@ var DEFAULT_OPTS = {
 Accepted: regular HTML objects or jQuery objects
 
 IMPORTANT NOTE:
-   If it happens that in element passed HTML collection is child of
+   If it happens that in passed HTML collection element is child of
    one of the elements in that collection, this child element will be deleted
    from collection and therefore from result.
 
@@ -23,7 +23,7 @@ IMPORTANT NOTE:
       </div>
    </div>
 
-   and if in JavaScript you use this line to get html elements:
+   and if in JavaScript we use this line to get html elements:
    var elements = document.getElementsByClassName('div');
 
    It will return this object (shortened):
@@ -37,6 +37,12 @@ IMPORTANT NOTE:
    will be deleted from collection when we will be converting it to JSON.
  */
 
+/**
+ * Takes array of elements and removes all elements that are children of any
+ * other element in array
+ * @param {[]} html Array of HTML Elements
+ * @returns {[]} Array without removed children
+ */
 function removeAllChildren(html) {
    var i, j,
       toDelete = [];
@@ -54,10 +60,10 @@ function removeAllChildren(html) {
 }
 
 /**
- * Takes ones html element and returns one json object
- * @param html
- * @param opts
- * @returns {*[]}
+ * Takes one html element and returns array of json objects
+ * @param html HTML element
+ * @param {{tag: String, attr: String, style: String, inner: String}} opts options for json object
+ * @returns {*[]} Array of json object converted from html
  */
 function createJSON(html, opts) {
    var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
