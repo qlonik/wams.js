@@ -56,38 +56,38 @@ function createJSON(html, opts) {
    var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
       result = {};
 
-   result[tag] = html.tagName.toLowerCase();
+      result[tag] = html.tagName.toLowerCase();
 
-   if (html.attributes.length) {
-      result[attr] = {};
-      util.forEach(html.attributes, function(value) {
-         var name = value.name;
-         if (name !== 'style') {
-            result[attr][name] = value.value;
+      if (html.attributes.length) {
+         result[attr] = {};
+         util.forEach(html.attributes, function(value) {
+            var name = value.name;
+            if (name !== 'style') {
+               result[attr][name] = value.value;
 
-            if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
-               result[attr][name] = result[attr][name].split(' ');
+               if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
+                  result[attr][name] = result[attr][name].split(' ');
+               }
             }
-         }
-      });
-   }
+         });
+      }
 
-   if (html.style.length) {
-      result[style] = {};
-      util.forEach(html.style, function(value) {
-         result[style][value] = html.style[value];
-      });
-   }
+      if (html.style.length) {
+         result[style] = {};
+         util.forEach(html.style, function(value) {
+            result[style][value] = html.style[value];
+         });
+      }
 
-   if (html.childNodes.length) {
-      result[inner] = [];
-      util.forEach(html.childNodes, function(childNode) {
-         var createdJSON = createJSON(childNode, opts);
-         Array.prototype.push.apply(result[inner], createdJSON);
-      });
-   } else {
-      result[inner] = html.innerHTML; // should never reach
-   }
+      if (html.childNodes.length) {
+         result[inner] = [];
+         util.forEach(html.childNodes, function(childNode) {
+            var createdJSON = createJSON(childNode, opts);
+            Array.prototype.push.apply(result[inner], createdJSON);
+         });
+      } else {
+         result[inner] = html.innerHTML; // should never reach
+      }
 
    return [result];
 }
