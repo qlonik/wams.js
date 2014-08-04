@@ -49,38 +49,39 @@ function removeAllChildren(html) {
 /**
  * Takes ones html element and returns one json object
  * @param html
+ * @param opts
  * @returns {{}}
  */
-function createJSON(html) {
-   var result = {};
+function createJSON(html, opts) {
+   var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
+      result = {};
 
-   result.tag = html.tagName.toLowerCase();
+   result[tag] = html.tagName.toLowerCase();
 
    if (html.attributes.length) {
-      result.attr = {};
-      util.forEach(html.attributes, function (value) {
-         result.attr[value.nodeName] = value.nodeValue;
+      result[attr] = {};
+      util.forEach(html.attributes, function(value) {
+         result[attr][value.nodeName] = value.nodeValue;
 
-         if (value.nodeName === 'class' &&
-            result.attr[value.nodeName].indexOf(' ') > -1) {
-            result.attr[value.nodeName] = result.attr[value.nodeName].split(' ');
+         if (name === 'class' && result[attr][value.nodeName].indexOf(' ') > -1) {
+            result[attr][value.nodeName] = result[attr][value.nodeName].split(' ');
          }
       });
    }
 
    if (html.style.length) {
-      result.style = {};
-      util.forEach(html.style, function (value) {
-         result.style[value] = html.style[value];
+      result[style] = {};
+      util.forEach(html.style, function(value) {
+         result[style][value] = html.style[value];
       });
    }
 
    if (html.children.length) {
-      util.forEach(html.children, function (childNode) {
-         result.inner = util.elemOrArray(result.inner, createJSON(childNode));
+      util.forEach(html.childNodes, function(childNode) {
+         result[inner] = util.elemOrArray(result[inner], createJSON(childNode));
       });
    } else {
-      result.inner = html.innerHTML;
+      result[inner] = html.innerHTML;
    }
 
    return result;
