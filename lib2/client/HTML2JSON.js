@@ -54,6 +54,9 @@ function removeAllChildren(html) {
  */
 function createJSON(html, opts) {
    var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
+      result;
+
+   if (html.nodeType === Node.ELEMENT_NODE) {
       result = {};
 
       result[tag] = html.tagName.toLowerCase();
@@ -88,6 +91,13 @@ function createJSON(html, opts) {
       } else {
          result[inner] = html.innerHTML; // should never reach
       }
+   } else if (html.nodeType === Node.TEXT_NODE) {
+      result = html.data;
+   } else if (html.nodeType === Node.COMMENT_NODE) {
+      result = '<!--' + html.data + '-->'
+   } else {
+      console.log('unknown element'); // should never reach
+   }
 
    return [result];
 }
