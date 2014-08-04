@@ -76,14 +76,14 @@ function createJSON(html, opts) {
       });
    }
 
-   if (html.children.length) {
+   if (html.childNodes.length) {
       result[inner] = [];
       util.forEach(html.childNodes, function(childNode) {
          var createdJSON = createJSON(childNode, opts);
          Array.prototype.push.apply(result[inner], createdJSON);
       });
    } else {
-      result[inner] = html.innerHTML;
+      result[inner] = html.innerHTML; // should never reach
    }
 
    return [result];
