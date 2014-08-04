@@ -1,5 +1,12 @@
 var util = require('../util');
 
+var DEFAULT_OPTS = {
+   tag: 'tag',
+   attr: 'attr',
+   style: 'style',
+   inner: 'inner'
+};
+
 /*
 Accepted: regular HTML objects or jQuery objects
 
@@ -102,24 +109,44 @@ function createJSON(html, opts) {
    return [result];
 }
 
-function HTML2JSON(html) {
-   if (util.isString(html)) {
-      var div = document.createElement('div');
-      div.innerHTML = html;
-      html = div.children;
-   }
-   var json;
+function HTML2JSON(html, settings) {
+   var data, convertedElement, div,
+      result = {
+         data: [],
+         opts: {}
+      };
 
-   if (html.length) {
-      html = removeAllChildren(html);
-      util.forEach(html, function (tag) {
-         json = util.elemOrArray(json, createJSON(tag));
-      });
+   data = html;
+   util.defaults(result.opts, settings, DEFAULT_OPTS);
+
+   if (util.isEmpty(data)) {
+      return result;
+   }
+
+   if (util.isString(data)) {
+      div = document.createElement('div');
+      div.innerHTML = data;
+
+      data = div.childNodes;
+   }
+
+   if (data.length) {
+      data = Array.prototype.slice.call(data);
+      data = removeAllChildren(data);
+   }
+
+   function convertAndPush(el) {
+      convertedElement = createJSON(el, result.opts);
+      Array.prototype.push.apply(result.data, convertedElement);
+   }
+
+   if (util.isArray(data)) {
+      util.forEach(data, convertAndPush);
    } else {
-      json = createJSON(html);
+      convertAndPush(data);
    }
 
-   return json;
+   return result;
 }
 
 module.exports = exports = HTML2JSON;
