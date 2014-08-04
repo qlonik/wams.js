@@ -61,7 +61,7 @@ function createJSON(html, opts) {
    if (html.attributes.length) {
       result[attr] = {};
       util.forEach(html.attributes, function(value) {
-         result[attr][value.nodeName] = value.nodeValue;
+         result[attr][value.nodeName] = value.value;
 
          if (name === 'class' && result[attr][value.nodeName].indexOf(' ') > -1) {
             result[attr][value.nodeName] = result[attr][value.nodeName].split(' ');
