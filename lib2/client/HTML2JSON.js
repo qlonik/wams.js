@@ -61,7 +61,7 @@ function createJSON(html, opts) {
    if (html.attributes.length) {
       result[attr] = {};
       util.forEach(html.attributes, function(value) {
-         var name = value.nodeName;
+         var name = value.name;
          result[attr][name] = value.value;
 
          if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
