@@ -50,7 +50,7 @@ function removeAllChildren(html) {
  * Takes ones html element and returns one json object
  * @param html
  * @param opts
- * @returns {{}}
+ * @returns {*[]}
  */
 function createJSON(html, opts) {
    var tag = opts.tag, attr = opts.attr, style = opts.style, inner = opts.inner,
@@ -77,14 +77,16 @@ function createJSON(html, opts) {
    }
 
    if (html.children.length) {
+      result[inner] = [];
       util.forEach(html.childNodes, function(childNode) {
-         result[inner] = util.elemOrArray(result[inner], createJSON(childNode));
+         var createdJSON = createJSON(childNode, opts);
+         Array.prototype.push.apply(result[inner], createdJSON);
       });
    } else {
       result[inner] = html.innerHTML;
    }
 
-   return result;
+   return [result];
 }
 
 function HTML2JSON(html) {
