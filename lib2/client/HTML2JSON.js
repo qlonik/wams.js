@@ -62,10 +62,12 @@ function createJSON(html, opts) {
       result[attr] = {};
       util.forEach(html.attributes, function(value) {
          var name = value.name;
-         result[attr][name] = value.value;
+         if (name !== 'style') {
+            result[attr][name] = value.value;
 
-         if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
-            result[attr][name] = result[attr][name].split(' ');
+            if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
+               result[attr][name] = result[attr][name].split(' ');
+            }
          }
       });
    }
