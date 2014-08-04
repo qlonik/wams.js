@@ -61,10 +61,11 @@ function createJSON(html, opts) {
    if (html.attributes.length) {
       result[attr] = {};
       util.forEach(html.attributes, function(value) {
-         result[attr][value.nodeName] = value.value;
+         var name = value.nodeName;
+         result[attr][name] = value.value;
 
-         if (name === 'class' && result[attr][value.nodeName].indexOf(' ') > -1) {
-            result[attr][value.nodeName] = result[attr][value.nodeName].split(' ');
+         if (name === 'class' && result[attr][name].indexOf(' ') > -1) {
+            result[attr][name] = result[attr][name].split(' ');
          }
       });
    }
