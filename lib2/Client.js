@@ -84,8 +84,7 @@ Client.prototype.cleanModel = function() {
    model.del();
 };
 Client.prototype.sendModel = function() {
-   var _this = this,
-      mainModel = this.racer.model, mainPath = this.racer.path;
+   var _this = this, mainModel = this.racer.model;
 
    mainModel.bundle(function (err, b) {
       if (err) {
@@ -95,8 +94,7 @@ Client.prototype.sendModel = function() {
 
       _this.socket.emit(SOCKET_EVENTS.racerBundle, null, {
          id: _this.id,
-         bundle: b,
-         path: mainPath
+         bundle: b
       });
    });
 };
