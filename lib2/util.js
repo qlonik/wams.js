@@ -28,10 +28,7 @@ var isServer = process.title !== 'browser',
       ready: 'ready'
    },
    HAMMER_EVENTS = [
-      'hold', 'tap', 'doubletap', 'drag', 'dragstart', 'dragend', 'dragup',
-      'dragdown', 'dragleft', 'dragright', 'swipe', 'swipeup', 'swipedown',
-      'swipeleft', 'swiperight', 'transform', 'transformstart', 'transformend',
-      'rotate', 'pinch', 'pinchin', 'pinchout', 'touch', 'release', 'gesture'
+      'tap', 'doubletap', 'pan', 'swipe', 'press', 'pinch', 'rotate'
    ],
    BROWSER_EVENTS = {};
 
