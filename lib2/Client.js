@@ -106,5 +106,20 @@ Client.prototype.equal = function(param) {
       (param.socket && (this.socket === param.socket))
       );
 };
+Client.prototype.addWorkspace = function(wrkspc) {
+   this.workspaces.push(wrkspc);
+   this.updateModel('workspaces', util.map(this.workspaces, util.getID));
+   this.emit(CLIENT_EVENTS.attachedWorkspace, null, wrkspc);
+};
+Client.prototype.removeWorkspace = function(param) {
+   var removed = util.remove(this.workspaces, function(wrkspc) {
+      return wrkspc.equal(param);
+   });
+   if (removed.length === 1) {
+      removed = removed[0];
+   }
+   this.updateModel('workspaces', util.map(this.workspaces, util.getID));
+   this.emit(CLIENT_EVENTS.detachedWorkspace, null, removed);
+};
 
 module.exports = Client;

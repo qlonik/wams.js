@@ -18,7 +18,9 @@ var isServer = process.title !== 'browser',
    CLIENT_EVENTS = {
       ready: 'clientReady',
       modelFetched: 'modelFetched',
-      modelUpdated: 'modelUpdated'
+      modelUpdated: 'modelUpdated',
+      attachedWorkspace: 'attachedWorkspace',
+      detachedWorkspace: 'detachedWorkspace'
    },
    SOCKET_EVENTS = {
       disconnect: 'disconnect',

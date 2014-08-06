@@ -170,12 +170,16 @@ Workspace.prototype.removeElement = function(param) {
 Workspace.prototype.addClient = function(client) {
    this.clients.push(client);
 
+   client.addWorkspace(this);
+
    this.updateModel('clients', util.map(this.clients, util.getID));
 };
 Workspace.prototype.removeClient = function(param) {
    var removed = util.remove(this.clients, function(client) {
       return client.equal(param)
    });
+
+   removed.forEach(function(cl) { cl.removeWorkspace(this); });
 
    this.updateModel('clients', util.map(this.clients, util.getID));
 };
