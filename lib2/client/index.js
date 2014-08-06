@@ -24,6 +24,8 @@ function WAMS() {
    EventEmitter.call(this);
 
    var _this = this;
+
+   this.connection = new Connection();
 }
 
 util.merge(WAMS.prototype, EventEmitter.prototype);
