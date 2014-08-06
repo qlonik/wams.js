@@ -95,6 +95,56 @@ WAMS.prototype.sendMTEvent = function(ev) {
    this.connection.emit(SOCKET_EVENTS.MTEvent, this.mtCreator.getEventMetadata(ev));
 };
 
+WAMS.prototype.getWorkspaceJSON = function(cb) {
+   var _this = this;
+
+   function get(err) {
+      var model = _this.browserModel, mainModel = _this.racer.model,
+         mainPath = _this.racer.path;
+
+      if (err) {
+         cb(err);
+      } else {
+         var uuids = model.get('workspaces');
+
+         if (util.isUndefined(uuids) || util.isEmpty(uuids)) {
+            cb(null);
+         } else {
+            var res = uuids.map(function(uuid) {
+               return mainModel.get(mainPath + '.workspaces.' + uuid + '.html');
+            });
+            if (res.length === 1) {
+               res = res[0];
+            }
+
+            cb(null, res);
+         }
+      }
+   }
+
+   if (this.modelReady) {
+      get(null)
+   } else {
+      _this.once(BROWSER_EVENTS.modelFetched, function(err) {
+         get(err);
+      });
+   }
+};
+WAMS.prototype.getWorkspaceHTML = function(cb) {
+   this.getWorkspaceJSON(function(err, json) {
+      if (err) {
+         cb(err);
+      } else {
+         var res = JSON2HTML(json);
+         if (res.length === 1) {
+            res = res[0];
+         }
+
+         cb(null, res);
+      }
+   });
+};
+
 WAMS.util = util;
 
 WAMS._Connection = Connection;
