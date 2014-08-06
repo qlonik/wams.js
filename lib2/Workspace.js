@@ -80,13 +80,13 @@ Workspace.prototype.attachServer = function(srv) {
          client = new ClientCreator(_this.racer, socket);
          _this.allConnectedClients.push(client);
 
-         _this.emit(WORKSPACE_EVENTS.clientConnected, null, client);
+         _this.emit(WORKSPACE_EVENTS.clientConnected, null, _this, client);
 
          client.on(CLIENT_EVENTS.ready, function(err) {
             if (err) {
                _this.emit(WORKSPACE_EVENTS.clientReady, err);
             } else {
-               _this.emit(WORKSPACE_EVENTS.clientReady, null, client);
+               _this.emit(WORKSPACE_EVENTS.clientReady, null, _this, client);
             }
          });
       }
@@ -100,7 +100,7 @@ Workspace.prototype.attachServer = function(srv) {
             client = client[0];
          }
 
-         _this.emit(WORKSPACE_EVENTS.clientDisconnected, null, client);
+         _this.emit(WORKSPACE_EVENTS.clientDisconnected, null, _this, client);
       }
    });
 };
