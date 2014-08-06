@@ -45,10 +45,27 @@ function WAMS() {
       _this.browserModel = model.at(_this.browserModelPath);
       _this.emit(BROWSER_EVENTS.modelFetched, null);
    });
+
+   this.updateModel();
 }
 
 util.merge(WAMS.prototype, EventEmitter.prototype);
 
+
+WAMS.prototype.updateModel = function(path, value) {
+   var _this = this, model = _this.browserModel;
+
+   if (!path) {
+      model.setDiff('id', _this.id);
+      model.setDiffDeep('shape', _this.shape);
+   } else {
+      if (util.isArray(value)) {
+         model.setArrayDiffDeep(path, value);
+      } else {
+         model.setDiffDeep(path, value);
+      }
+   }
+};
 
 WAMS.util = util;
 
