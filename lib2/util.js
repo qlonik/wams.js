@@ -30,7 +30,9 @@ var isServer = process.title !== 'browser',
    HAMMER_EVENTS = [
       'tap', 'doubletap', 'pan', 'swipe', 'press', 'pinch', 'rotate'
    ],
-   BROWSER_EVENTS = {};
+   BROWSER_EVENTS = {
+      modelFetched: 'modelFetched'
+   };
 
 function notImplemented(func) {
    throw new Error('Function "' + func + '" not implemented');

@@ -26,6 +26,25 @@ function WAMS() {
    var _this = this;
 
    this.connection = new Connection();
+   this.racer = {
+      path: util.RACER_PATH
+   };
+
+   this.modelReady = false;
+
+   this.connection.on(SOCKET_EVENTS.racerBundle, function(err, data) {
+      if (err) { throw err; }
+
+      _this.id = data.id;
+      _this.racer.store = racer.init(data.bundle);
+   });
+   racer.ready(function(model) {
+      _this.modelReady = true;
+      _this.racer.model = model;
+      _this.browserModelPath = _this.racer.path + '.clients.' + _this.id;
+      _this.browserModel = model.at(_this.browserModelPath);
+      _this.emit(BROWSER_EVENTS.modelFetched, null);
+   });
 }
 
 util.merge(WAMS.prototype, EventEmitter.prototype);
