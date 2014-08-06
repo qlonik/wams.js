@@ -26,6 +26,7 @@ function WAMS() {
    var _this = this;
 
    this.connection = new Connection();
+   this.mtCreator = new MTCreator();
    this.racer = {
       path: util.RACER_PATH
    };
@@ -82,6 +83,16 @@ WAMS.prototype.mergeShape = function(newShape) {
    util.merge(this.shape, newShape);
 
    this.updateModel('shape', this.shape);
+};
+
+WAMS.prototype.createMTElement = function(html, opts) {
+   return this.mtCreator.create(html, opts);
+};
+WAMS.prototype.removeMTElement = function(mt) {
+   return this.mtCreator.remove(mt);
+};
+WAMS.prototype.sendMTEvent = function(ev) {
+   this.connection.emit(SOCKET_EVENTS.MTEvent, this.mtCreator.getEventMetadata(ev));
 };
 
 WAMS.util = util;

@@ -25,7 +25,8 @@ var isServer = process.title !== 'browser',
    SOCKET_EVENTS = {
       disconnect: 'disconnect',
       racerBundle: 'racerBundle',
-      ready: 'ready'
+      ready: 'ready',
+      MTEvent: 'mt'
    },
    HAMMER_EVENTS = [
       'tap', 'doubletap', 'pan', 'swipe', 'press', 'pinch', 'rotate'
