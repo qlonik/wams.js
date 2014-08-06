@@ -29,6 +29,8 @@ function WAMS() {
    this.racer = {
       path: util.RACER_PATH
    };
+   this.shape = util.clone(DEFAULT_SHAPE);
+   this.mergeShape({ w: window.innerWidth, h: window.innerHeight });
 
    this.modelReady = false;
 
@@ -60,6 +62,7 @@ WAMS.prototype.updateModel = function(path, value) {
 
       if (!path) {
          model.setDiff('id', _this.id);
+         model.setDiffDeep('shape', _this.shape);
       } else {
          if (util.isArray(value)) {
             model.setArrayDiffDeep(path, value);
@@ -74,6 +77,11 @@ WAMS.prototype.updateModel = function(path, value) {
    } else {
       this.once(BROWSER_EVENTS.modelFetched, update);
    }
+};
+WAMS.prototype.mergeShape = function(newShape) {
+   util.merge(this.shape, newShape);
+
+   this.updateModel('shape', this.shape);
 };
 
 WAMS.util = util;
