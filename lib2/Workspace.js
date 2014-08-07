@@ -105,25 +105,35 @@ Workspace.prototype.attachServer = function(srv) {
    });
 };
 Workspace.prototype.updateModel = function(path, value) {
-   var _this = this, model = this.workspaceModel;
+   var _this = this;
 
-   if (!path) {
-      model.setDiff('id', _this.id);
-      model.setDiff('type', _this.type);
-      model.setDiffDeep('shape', _this.shape);
-      model.setArrayDiff('clients', util.map(_this.clients, util.getID));
-      model.setArrayDiff('inner', util.map(_this.inner, util.getID));
+   function update() {
+      var model = _this.workspaceModel;
 
-      model.setDiffDeep('html', _this.html);
-   } else {
-      if (util.isArray(value)) {
-         model.setArrayDiffDeep(path, value);
+      if (!path) {
+         model.setDiff('id', _this.id);
+         model.setDiff('type', _this.type);
+         model.setDiffDeep('shape', _this.shape);
+         model.setArrayDiff('clients', util.map(_this.clients, util.getID));
+         model.setArrayDiff('inner', util.map(_this.inner, util.getID));
+
+         model.setDiffDeep('html', _this.html);
       } else {
-         model.setDiffDeep(path, value);
+         if (util.isArray(value)) {
+            model.setArrayDiffDeep(path, value);
+         } else {
+            model.setDiffDeep(path, value);
+         }
       }
+
+      _this.emit(WORKSPACE_EVENTS.modelUpdated, null);
    }
 
-   this.emit(WORKSPACE_EVENTS.modelUpdated, null)
+   if (this.modelReady) {
+      update();
+   } else {
+      this.once(WORKSPACE_EVENTS.modelFetched, update);
+   }
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(
