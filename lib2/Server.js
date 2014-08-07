@@ -17,7 +17,7 @@ var http = require('http'),
 var DEFAULT_OPTS = {
       port: 3000,
       networkPath: '/wams',
-      static: 'public'
+      static: path.join(__dirname, 'public')
    },
    SERVER_EVENTS = util.SERVER_EVENTS;
 
