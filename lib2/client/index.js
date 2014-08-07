@@ -73,6 +73,8 @@ WAMS.prototype.updateModel = function(path, value) {
             model.setDiffDeep(path, value);
          }
       }
+
+      _this.emit(BROWSER_EVENTS.modelUpdated, null);
    }
 
    if (this.modelReady) {

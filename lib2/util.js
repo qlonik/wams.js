@@ -33,7 +33,8 @@ var isServer = process.title !== 'browser',
       'tap', 'doubletap', 'pan', 'swipe', 'press', 'pinch', 'rotate'
    ],
    BROWSER_EVENTS = {
-      modelFetched: 'modelFetched'
+      modelFetched: 'modelFetched',
+      modelUpdated: 'modelUpdated'
    };
 
 function notImplemented(func) {
