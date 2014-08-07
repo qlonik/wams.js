@@ -58,7 +58,9 @@ util.merge(WAMS.prototype, EventEmitter.prototype);
 WAMS.prototype.updateModel = function(path, value) {
    var _this = this;
 
-   function update() {
+   function update(err) {
+      if (err) { throw err; }
+
       var model = _this.browserModel;
 
       if (!path) {
@@ -74,7 +76,7 @@ WAMS.prototype.updateModel = function(path, value) {
    }
 
    if (this.modelReady) {
-      update();
+      update(null);
    } else {
       this.once(BROWSER_EVENTS.modelFetched, update);
    }

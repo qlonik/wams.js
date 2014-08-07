@@ -107,7 +107,9 @@ Workspace.prototype.attachServer = function(srv) {
 Workspace.prototype.updateModel = function(path, value) {
    var _this = this;
 
-   function update() {
+   function update(err) {
+      if (err) { throw err; }
+
       var model = _this.workspaceModel;
 
       if (!path) {
@@ -130,7 +132,7 @@ Workspace.prototype.updateModel = function(path, value) {
    }
 
    if (this.modelReady) {
-      update();
+      update(null);
    } else {
       this.once(WORKSPACE_EVENTS.modelFetched, update);
    }
