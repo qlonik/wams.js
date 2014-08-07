@@ -122,6 +122,8 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiffDeep(path, value);
       }
    }
+
+   this.emit(WORKSPACE_EVENTS.modelUpdated, null)
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(

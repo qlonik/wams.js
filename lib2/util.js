@@ -12,7 +12,8 @@ var isServer = process.title !== 'browser',
       clientConnected: 'newClient',
       clientReady: 'readyClient',
       clientDisconnected: 'disconnectClient',
-      modelFetched: 'modelFetched'
+      modelFetched: 'modelFetched',
+      modelUpdated: 'modelUpdated'
    },
    WORKSPACE_OBJECT_EVENTS = {},
    CLIENT_EVENTS = {
