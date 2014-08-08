@@ -105,7 +105,8 @@ function createAndPopulateNode(metadata, opts) {
 
       if (util.isArray(metadata[inner])) {
          util.forEach(metadata[inner], createAndAppendChild);
-      } else {
+      } else if (util.isString(metadata[inner]) ||
+         util.isPlainObject(metadata[inner])) {
          createAndAppendChild(metadata[inner]);
       }
 
