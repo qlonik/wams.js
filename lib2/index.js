@@ -67,11 +67,11 @@ WAMS._WorkspaceObject = WorkspaceObject;
 WAMS._Client = Client;
 
 WAMS.Workspace = WAMS;
-WAMS.WorkspaceObject = function() {
-   return new WorkspaceObject();
+WAMS.WorkspaceObject = function(html) {
+   return new WorkspaceObject(racerObj, html);
 };
-WAMS.Client = function() {
-   return new Client();
+WAMS.Client = function(socket) {
+   return new Client(racerObj, socket);
 };
 
 module.exports = WAMS;
