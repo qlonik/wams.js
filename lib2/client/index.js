@@ -33,6 +33,7 @@ function WAMS() {
    this.shape = util.clone(DEFAULT_SHAPE);
    this.mergeShape({ w: window.innerWidth, h: window.innerHeight });
 
+   this.clientReady = false;
    this.modelReady = false;
 
    this.connection.on(SOCKET_EVENTS.racerBundle, function(err, data) {
@@ -47,6 +48,17 @@ function WAMS() {
       _this.browserModelPath = _this.racer.path + '.clients.' + _this.id;
       _this.browserModel = mainModel.at(_this.browserModelPath);
       _this.emit(BROWSER_EVENTS.modelFetched, null);
+   });
+
+   _this.once(BROWSER_EVENTS.modelFetched, function(err) {
+      setTimeout(function() {
+         _this.connection.emit(SOCKET_EVENTS.ready, err);
+      }, 1000);
+      if (err) {
+         throw err;
+      } else {
+         _this.clientReady = true;
+      }
    });
 
    this.updateModel();
