@@ -60,8 +60,6 @@ function WAMS() {
          _this.clientReady = true;
       }
    });
-
-   this.updateModel();
 }
 
 util.merge(WAMS.prototype, EventEmitter.prototype);
