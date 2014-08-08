@@ -96,7 +96,7 @@ WAMS.prototype.removeMTElement = function(mt) {
    return this.mtCreator.remove(mt);
 };
 WAMS.prototype.sendMTEvent = function(ev) {
-   this.connection.emit(SOCKET_EVENTS.MTEvent, this.mtCreator.getEventMetadata(ev));
+   this.connection.emit(SOCKET_EVENTS.MTEvent, null, this.mtCreator.getEventMetadata(ev));
 };
 
 WAMS.prototype.getWorkspaceJSON = function(cb) {

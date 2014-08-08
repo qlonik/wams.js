@@ -73,6 +73,16 @@ function Client(racer, socket) {
       });
    });
 
+   this.socket.on(SOCKET_EVENTS.MTEvent, function(err, ev) {
+      var target = ev.target, type = ev.type, found;
+
+      found = util.find(_this.workspaces, function(wrkspc) {
+         return wrkspc.equal(target);
+      });
+
+      found.emit(type, err, found, _this, ev);
+   });
+
    this.updateModel();
    this.sendModel();
 }
