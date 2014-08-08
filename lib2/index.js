@@ -26,6 +26,7 @@ var atLeastOneServer = false,
 function cleanModel() {
    model.del(path + '.clients');
    model.del(path + '.workspaces');
+   model.del(path + '.workspaceObjects');
 }
 
 // graceful shutdown on windows
