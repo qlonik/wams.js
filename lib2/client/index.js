@@ -41,11 +41,11 @@ function WAMS() {
       _this.id = data.id;
       _this.racer.store = racer.init(data.bundle);
    });
-   racer.ready(function(model) {
+   racer.ready(function(mainModel) {
       _this.modelReady = true;
-      _this.racer.model = model;
+      _this.racer.model = mainModel;
       _this.browserModelPath = _this.racer.path + '.clients.' + _this.id;
-      _this.browserModel = model.at(_this.browserModelPath);
+      _this.browserModel = mainModel.at(_this.browserModelPath);
       _this.emit(BROWSER_EVENTS.modelFetched, null);
    });
 
