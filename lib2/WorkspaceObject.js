@@ -67,6 +67,8 @@ function WorkspaceObject(racer, html) {
          }
       });
    });
+
+   this.updateModel();
 }
 
 util.merge(WorkspaceObject.prototype, EventEmitter.prototype);
