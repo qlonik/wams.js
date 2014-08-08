@@ -58,6 +58,25 @@ function Workspace(racer, srv) {
       _this.emit(WORKSPACE_EVENTS.modelFetched, err);
    });
 
+   model.subscribe(path, function() {
+      _this.workspaceModel.on('change', '**', function(pathS, val, old, passed) {
+         if (passed.$remote) {
+            var path = pathS.split('.'), last = path.pop(),
+               i = -1, len = path.length, el = _this;
+
+            while (++i < len) {
+               el = el[path[i]];
+            }
+
+            if (last) {
+               el[last] = val;
+            } else {
+               el = val;
+            }
+         }
+      });
+   });
+
    this.updateModel();
 }
 

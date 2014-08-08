@@ -54,6 +54,25 @@ function Client(racer, socket) {
       _this.cleanModel();
    });
 
+   model.subscribe(path, function() {
+      _this.clientModel.on('change', '**', function(pathS, val, old, passed) {
+         if (passed.$remote) {
+            var path = pathS.split('.'), last = path.pop(),
+               i = -1, len = path.length, el = _this;
+
+            while (++i < len) {
+               el = el[path[i]];
+            }
+
+            if (last) {
+               el[last] = val;
+            } else {
+               el = val;
+            }
+         }
+      });
+   });
+
    this.updateModel();
    this.sendModel();
 }

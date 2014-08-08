@@ -48,6 +48,25 @@ function WorkspaceObject(racer, html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
       this.mergeAttr({ id: _this.id, class: [_this.type] });
    }
+
+   model.subscribe(path, function() {
+      _this.workspaceObjectModel.on('change', '**', function(pathS, val, old, passed) {
+         if (passed.$remote) {
+            var path = pathS.split('.'), last = path.pop(),
+               i = -1, len = path.length, el = _this;
+
+            while (++i < len) {
+               el = el[path[i]];
+            }
+
+            if (last) {
+               el[last] = val;
+            } else {
+               el = val;
+            }
+         }
+      });
+   });
 }
 
 util.merge(WorkspaceObject.prototype, EventEmitter.prototype);
