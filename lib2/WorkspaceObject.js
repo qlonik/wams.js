@@ -38,6 +38,7 @@ function WorkspaceObject(racer, html) {
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
+   this.storage = {};
 
    this.modelReady = false;
    this.workspaceObjectModelPath = this.racer.path + '.workspaceObjects.' + this.id;
@@ -59,6 +60,7 @@ WorkspaceObject.prototype.updateModel = function(path ,value) {
       model.setDiff('id', _this.id);
       model.setDiff('type', _this.type);
       model.setDiffDeep('shape', _this.shape);
+      model.setDiffDeep('storage', _this.storage);
 
       model.setDiffDeep('html', _this.html);
    } else {
@@ -80,6 +82,19 @@ WorkspaceObject.prototype.mergeStyle = function(newStyle) {
    util.merge(this.html.style, newStyle);
 
    this.updateModel('html.style', this.html.style);
+};
+WorkspaceObject.prototype.set = function(key, val) {
+   this.storage[key] = val;
+
+   this.updateModel('storage', this.storage);
+};
+WorkspaceObject.prototype.del = function(key) {
+   delete this.storage[key];
+
+   this.updateModel('storage', this.storage);
+};
+WorkspaceObject.prototype.get = function(key) {
+   return this.storage[key];
 };
 
 module.exports = WorkspaceObject;

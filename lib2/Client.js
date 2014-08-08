@@ -31,6 +31,7 @@ function Client(racer, socket) {
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.workspaces = [];
+   this.storage = {};
 
    this.clientReady = false;
    this.modelReady = false;
@@ -68,6 +69,7 @@ Client.prototype.updateModel = function(path, value) {
       model.setDiff('type', _this.type);
       model.setDiffDeep('shape', _this.shape);
       model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
+      model.setDiffDeep('storage', _this.storage);
    } else {
       if (util.isArray(value)) {
          model.setArrayDiffDeep(path, value);
@@ -105,6 +107,19 @@ Client.prototype.equal = function(param) {
       (param.id && (this.id === param.id)) ||
       (param.socket && (this.socket === param.socket))
       );
+};
+Client.prototype.set = function(key, val) {
+   this.storage[key] = val;
+
+   this.updateModel('storage', this.storage);
+};
+Client.prototype.del = function(key) {
+   delete this.storage[key];
+
+   this.updateModel('storage', this.storage);
+};
+Client.prototype.get = function(key) {
+   return this.storage[key];
 };
 Client.prototype.addWorkspace = function(wrkspc) {
    this.workspaces.push(wrkspc);

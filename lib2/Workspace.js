@@ -33,6 +33,7 @@ function Workspace(racer, srv) {
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
+   this.storage = {};
    this.clients = [];
    this.inner = [];
 
@@ -116,6 +117,7 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiff('id', _this.id);
          model.setDiff('type', _this.type);
          model.setDiffDeep('shape', _this.shape);
+         model.setDiffDeep('storage', _this.storage);
          model.setArrayDiff('clients', util.map(_this.clients, util.getID));
          model.setArrayDiff('inner', util.map(_this.inner, util.getID));
 
@@ -142,6 +144,19 @@ Workspace.prototype.equal = function(workspace) {
       (this.id === workspace) ||
       (workspace.id && (this.id === workspace.id))
       );
+};
+Workspace.prototype.set = function(key, val) {
+   this.storage[key] = val;
+
+   this.updateModel('storage', this.storage);
+};
+Workspace.prototype.del = function(key) {
+   delete this.storage[key];
+
+   this.updateModel('storage', this.storage);
+};
+Workspace.prototype.get = function(key) {
+   return this.storage[key];
 };
 Workspace.prototype.mergeShape = function(newShape) {
    util.merge(this.shape, newShape);
