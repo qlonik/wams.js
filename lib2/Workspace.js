@@ -16,6 +16,12 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
       r: 0,       // rotation
       s: 100      // scale
    },
+   DEFAULT_HTML = {
+      tag: 'div',
+      attr: {},
+      style: {},
+      inner: []
+   },
    TYPE = 'workspace';
 
 function Workspace(racer, srv) {
@@ -41,17 +47,9 @@ function Workspace(racer, srv) {
    this.workspaceModelPath = path + '.workspaces.' + this.id;
    this.workspaceModel = model.at(this.workspaceModelPath);
 
-   this.html = {
-      tag: 'div',
-      attr: {
-         id: this.id,
-         class: ['workspace']
-      },
-      style: {
-         position: 'absolute'
-      },
-      inner: []
-   };
+   this.html = util.cloneDeep(DEFAULT_HTML);
+
+   this.mergeAttr({ id: _this.id, class: [_this.type] });
 
    model.fetch(path, function(err) {
       if (!err) {
