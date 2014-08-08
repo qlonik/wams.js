@@ -15,7 +15,9 @@ var isServer = process.title !== 'browser',
       modelFetched: 'modelFetched',
       modelUpdated: 'modelUpdated'
    },
-   WORKSPACE_OBJECT_EVENTS = {},
+   WORKSPACE_OBJECT_EVENTS = {
+      modelUpdated: 'modelUpdated'
+   },
    CLIENT_EVENTS = {
       ready: 'clientReady',
       modelFetched: 'modelFetched',
