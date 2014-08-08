@@ -61,6 +61,8 @@ function WAMS(port) {
    return new Workspace(racerObj, srv);
 }
 
+WAMS.util = util;
+
 WAMS._Server = Server;
 WAMS._Workspace = Workspace;
 WAMS._WorkspaceObject = WorkspaceObject;
