@@ -101,7 +101,23 @@ WorkspaceObject.prototype.equal = function(param) {
       );
 };
 WorkspaceObject.prototype.mergeAttr = function(newAttr) {
-   util.merge(this.html.attr, newAttr);
+   util.merge(this.html.attr, newAttr, function(a, b) {
+      if (util.isArray(a)) {
+         if (util.isUndefined(b)) {
+            return util.uniq(a);
+         } else {
+            return util.uniq(a.concat(b));
+         }
+      } else if (util.isArray(b)) {
+         if (util.isUndefined(a)) {
+            return util.uniq(b);
+         } else {
+            return util.uniq(b.concat(a));
+         }
+      } else {
+         return undefined;
+      }
+   });
 
    this.updateModel('html.attr', this.html.attr);
 };
