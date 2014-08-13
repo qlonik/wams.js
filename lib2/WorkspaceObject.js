@@ -46,8 +46,9 @@ function WorkspaceObject(racer, html) {
 
    if (!this.html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
-      this.mergeAttr({ id: _this.id, class: [_this.type] });
    }
+   this.mergeAttr({ id: _this.id, class: [_this.type] });
+   this.mergeStyle({ position: 'absolute' });
 
    model.subscribe(path, function() {
       _this.workspaceObjectModel.on('change', '**', function(pathS, val, old, passed) {
