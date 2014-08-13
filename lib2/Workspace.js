@@ -2,6 +2,7 @@ var EventEmitter = require('events').EventEmitter,
 
    util = require('./util'),
    StorageCreator = require('./Store'),
+   WorkspaceObject = require('./WorkspaceObject'),
    ClientCreator = require('./Client');
 
 var SERVER_EVENTS = util.SERVER_EVENTS,
@@ -83,6 +84,11 @@ function Workspace(racer, srv) {
 util.merge(Workspace.prototype, EventEmitter.prototype);
 
 
+/**
+ * Attaches server to the current {@link Workspace} and adds listeners
+ * for connected and disconnected clients.
+ * @param {Server} srv Server instance
+ */
 Workspace.prototype.attachServer = function(srv) {
    this.srv = srv;
    this.allConnectedClients = new StorageCreator();
@@ -197,6 +203,12 @@ Workspace.prototype.addElement = function(el) {
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
 };
+/**
+ * Remove element by id or by element.
+ * If passed parameter has equal method, then we will use it to compare html
+ * inner element. Otherwise param will be considered as id.
+ * @param {String|WorkspaceObject} param Parameter of element
+ */
 Workspace.prototype.removeElement = function(param) {
    //remove from inner array
    util.remove(this.inner, function(el) {
