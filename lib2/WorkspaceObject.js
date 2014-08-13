@@ -9,7 +9,6 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    SOCKET_EVENTS = util.SOCKET_EVENTS,
    HAMMER_EVENTS = util.HAMMER_EVENTS,
    BROWSER_EVENTS = util.BROWSER_EVENTS,
-   TYPE = 'workspaceObject',
    DEFAULT_SHAPE = {
       x: 0,
       y: 0,
@@ -23,7 +22,8 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
       attr: {},
       style: {},
       inner: []
-   };
+   },
+   TYPE = util.WORKSPACE_OBJECT_TYPE;
 
 
 function WorkspaceObject(racer, html) {

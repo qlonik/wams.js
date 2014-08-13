@@ -16,7 +16,7 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
       r: 0,       // rotation
       s: 100      // scale
    },
-   TYPE = 'client';
+   TYPE = util.CLIENT_TYPE;
 
 function Client(racer, socket) {
    EventEmitter.call(this);

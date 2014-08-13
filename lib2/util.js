@@ -4,6 +4,9 @@ var isServer = process.title !== 'browser',
    enableLodash = true,
 
    RACER_PATH = 'wams',
+   WORKSPACE_TYPE = 'workspace',
+   WORKSPACE_OBJECT_TYPE = 'workspaceObject',
+   CLIENT_TYPE = 'client',
    SERVER_EVENTS = {
       connectClient: 'client',
       disconnectClient: 'clientDisconnect'
@@ -78,6 +81,9 @@ exports.isServer = isServer;
 exports.enableLodash = enableLodash;
 
 exports.RACER_PATH = RACER_PATH;
+exports.WORKSPACE_TYPE = WORKSPACE_TYPE;
+exports.WORKSPACE_OBJECT_TYPE = WORKSPACE_OBJECT_TYPE;
+exports.CLIENT_TYPE = CLIENT_TYPE;
 exports.SERVER_EVENTS = SERVER_EVENTS;
 exports.WORKSPACE_EVENTS = WORKSPACE_EVENTS;
 exports.WORKSPACE_OBJECT_EVENTS = WORKSPACE_OBJECT_EVENTS;

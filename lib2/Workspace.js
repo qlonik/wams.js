@@ -22,7 +22,7 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
       style: {},
       inner: []
    },
-   TYPE = 'workspace';
+   TYPE = util.WORKSPACE_TYPE;
 
 function Workspace(racer, srv) {
    EventEmitter.call(this);
