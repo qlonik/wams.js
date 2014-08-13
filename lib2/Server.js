@@ -17,8 +17,9 @@ var http = require('http'),
 var DEFAULT_OPTS = {
       port: 3000,
       networkPath: '/wams',
-      static: path.join(__dirname, 'public')
+      static: []
    },
+   STATIC_FOLDER = path.join(__dirname, 'public'),
    SERVER_EVENTS = util.SERVER_EVENTS;
 
 function Serv(racer, opts) {
@@ -45,7 +46,14 @@ function Serv(racer, opts) {
 //   this.app.use(bodyParser.urlencoded());
 //   this.app.use(cookieParser());
    this.app.use(racerBrowserChannel(this.racer.store));
-   this.app.use(express.static(path.resolve(this.opts.static)));
+   this.app.use(express.static(path.resolve(STATIC_FOLDER)));
+   if (util.isString(_this.opts.static)) {
+      _this.app.use(express.static(path.resolve(_this.opts.static)));
+   } else if (util.isArray(_this.opts.static)) {
+      util.forEach(_this.opts.static, function(staticPath) {
+         _this.app.use(express.static(path.resolve(staticPath)));
+      });
+   }
 
    // routers
    this.app.use('/', allRouter(this));
