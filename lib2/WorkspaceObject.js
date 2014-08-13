@@ -94,6 +94,12 @@ WorkspaceObject.prototype.updateModel = function(path ,value) {
 
    _this.emit(WORKSPACE_OBJECT_EVENTS.modelUpdated, null);
 };
+WorkspaceObject.prototype.equal = function(param) {
+   return !!(
+      (this.id === param) ||
+      (param.id && (this.id === param.id))
+      );
+};
 WorkspaceObject.prototype.mergeAttr = function(newAttr) {
    util.merge(this.html.attr, newAttr);
 
