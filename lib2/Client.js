@@ -74,13 +74,28 @@ function Client(racer, socket) {
    });
 
    this.socket.on(SOCKET_EVENTS.MTEvent, function(err, ev) {
-      var target = ev.target, type = ev.type, found;
+      if (err) {
+         util.forEach(HAMMER_EVENTS, function(type) {
+            _this.emit(type, err);
+         });
+      } else {
+         var workspace, element,
+            type = ev.src.type, id = ev.src.id, wrkspc = ev.src.wrkspc,
+            mt = ev.mt;
 
-      found = util.find(_this.workspaces, function(wrkspc) {
-         return wrkspc.equal(target);
-      });
+         workspace = util.find(_this.workspaces, function (ws) {
+            return ws.equal(wrkspc);
+         });
 
-      found.emit(type, err, found, _this, ev);
+         if (type === 'workspace') {
+            workspace.emit(mt.type, null, workspace, _this, mt);
+         } else if (type === 'workspaceObject') {
+            element = util.find(workspace.inner, function (el) {
+               return el.equal(id);
+            });
+            element.emit(mt.type, null, workspace, _this, mt);
+         }
+      }
    });
 
    this.updateModel();

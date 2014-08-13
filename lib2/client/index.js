@@ -106,7 +106,28 @@ WAMS.prototype.removeMTElement = function(mt) {
    return this.mtCreator.remove(mt);
 };
 WAMS.prototype.sendMTEvent = function(ev) {
-   this.connection.emit(SOCKET_EVENTS.MTEvent, null, this.mtCreator.getEventMetadata(ev));
+   var target = ev.target, classes = target.classList, parent = target,
+      obj = {
+         src: {},
+         mt: this.mtCreator.getEventMetadata(ev)
+      };
+
+   if (util.indexOf(classes, 'workspaceObject') > -1) {
+      obj.src.type = 'workspaceObject';
+      obj.src.id = target.id;
+
+      while (util.indexOf(parent.classList, 'workspace') === -1 && parent) {
+         parent = parent.parentNode;
+      }
+      obj.src.wrkspc = parent.id;
+   } else if (util.indexOf(classes, 'workspace') > -1) {
+      obj.src.type = 'workspace';
+      obj.src.id = target.id;
+
+      obj.src.wrkspc = parent.id;
+   }
+
+   this.connection.emit(SOCKET_EVENTS.MTEvent, null, obj);
 };
 
 WAMS.prototype.getWorkspaceJSON = function(cb) {
