@@ -39,6 +39,7 @@ function WorkspaceObject(racer, html) {
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.storage = {};
+   this.parent = [];
 
    this.modelReady = false;
    this.workspaceObjectModelPath = this.racer.path + '.workspaceObjects.' + this.id;
@@ -83,6 +84,7 @@ WorkspaceObject.prototype.updateModel = function(path ,value) {
       model.setDiff('type', _this.type);
       model.setDiffDeep('shape', _this.shape);
       model.setDiffDeep('storage', _this.storage);
+      model.setArrayDiff('parent', util.map(_this.parent, util.getID));
 
       model.setDiffDeep('html', _this.html);
    } else {
@@ -139,6 +141,18 @@ WorkspaceObject.prototype.del = function(key) {
 };
 WorkspaceObject.prototype.get = function(key) {
    return this.storage[key];
+};
+WorkspaceObject.prototype.addParent = function(parent) {
+   this.parent.push(parent);
+
+   this.updateModel('parent', util.map(this.parent, util.getID));
+};
+WorkspaceObject.prototype.removeParent = function(param) {
+   util.remove(this.parent, function(el) {
+      return el.equal(param);
+   });
+
+   this.updateModel('parent', util.map(this.parent, util.getID));
 };
 
 module.exports = WorkspaceObject;

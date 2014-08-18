@@ -41,6 +41,7 @@ function Workspace(racer, srv) {
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.storage = {};
+   this.parent = [];
    this.clients = [];
    this.inner = [];
 
@@ -141,6 +142,7 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiff('type', _this.type);
          model.setDiffDeep('shape', _this.shape);
          model.setDiffDeep('storage', _this.storage);
+         model.setArrayDiff('parent', util.map(_this.parent, util.getID));
          model.setArrayDiff('clients', util.map(_this.clients, util.getID));
          model.setArrayDiff('inner', util.map(_this.inner, util.getID));
 
@@ -200,6 +202,8 @@ Workspace.prototype.addElement = function(el) {
    this.inner.push(el);
    this.html.inner.push(el.html);
 
+   el.addParent(this);
+
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
 };
@@ -222,6 +226,8 @@ Workspace.prototype.removeElement = function(param) {
          );
    });
 
+   el.removeParent(this);
+
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
 };
@@ -240,6 +246,18 @@ Workspace.prototype.removeClient = function(param) {
    removed.forEach(function(cl) { cl.removeWorkspace(this); });
 
    this.updateModel('clients', util.map(this.clients, util.getID));
+};
+Workspace.prototype.addParent = function(parent) {
+   this.parent.push(parent);
+
+   this.updateModel('parent', util.map(this.parent, util.getID));
+};
+Workspace.prototype.removeParent = function(param) {
+   util.remove(this.parent, function(el) {
+      return el.equal(param);
+   });
+
+   this.updateModel('parent', util.map(this.parent, util.getID));
 };
 
 module.exports = Workspace;
