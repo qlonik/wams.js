@@ -45,7 +45,10 @@ function WAMS() {
       _this.model = mainModel;
       _this.browserModelPath = path + '.clients.' + _this.id;
       _this.browserModel = mainModel.at(_this.browserModelPath);
-      _this.emit(BROWSER_EVENTS.modelFetched, null);
+
+      mainModel.subscribe(path, function() {
+         _this.emit(BROWSER_EVENTS.modelFetched, null);
+      });
    });
 
    _this.once(BROWSER_EVENTS.modelFetched, function(err) {
