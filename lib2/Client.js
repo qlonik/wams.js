@@ -38,6 +38,9 @@ function Client(store, socket) {
    this.modelReady = false;
    this.clientModelPath = path + '.clients.' + this.id;
 
+   this.updateModel();
+   this.sendModel();
+
    this.socket.on(SOCKET_EVENTS.ready, function(err) {
       if (!err) {
          _this.clientReady = true;
@@ -96,9 +99,6 @@ function Client(store, socket) {
          }
       }
    });
-
-   this.updateModel();
-   this.sendModel();
 }
 
 util.merge(Client.prototype, EventEmitter.prototype);

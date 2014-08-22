@@ -48,6 +48,8 @@ function WorkspaceObject(store, html) {
    if (!this.html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
    }
+
+   this.updateModel();
    this.mergeAttr({ id: _this.id, class: [_this.type] });
    this.mergeStyle({ position: 'absolute' });
 
@@ -74,8 +76,6 @@ function WorkspaceObject(store, html) {
 
       _this.emit(WORKSPACE_OBJECT_EVENTS.modelFetched, null);
    });
-
-   this.updateModel();
 }
 
 util.merge(WorkspaceObject.prototype, EventEmitter.prototype);

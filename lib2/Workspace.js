@@ -51,6 +51,7 @@ function Workspace(store, srv) {
 
    this.html = util.cloneDeep(DEFAULT_HTML);
 
+   this.updateModel();
    this.mergeAttr({ id: _this.id, class: [_this.type] });
 
    model.subscribe(path, function() {
@@ -76,8 +77,6 @@ function Workspace(store, srv) {
 
       _this.emit(WORKSPACE_EVENTS.modelFetched, null);
    });
-
-   this.updateModel();
 }
 
 util.merge(Workspace.prototype, EventEmitter.prototype);
