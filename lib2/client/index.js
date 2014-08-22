@@ -29,10 +29,11 @@ function WAMS() {
    this.connection = new Connection();
    this.mtCreator = new MTCreator();
    this.shape = util.clone(DEFAULT_SHAPE);
-   this.mergeShape({ w: window.innerWidth, h: window.innerHeight });
 
    this.clientReady = false;
    this.modelReady = false;
+
+   this.mergeShape({ w: window.innerWidth, h: window.innerHeight });
 
    this.connection.on(SOCKET_EVENTS.racerBundle, function(err, data) {
       if (err) { throw err; }
