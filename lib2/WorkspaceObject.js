@@ -44,7 +44,6 @@ function WorkspaceObject(store, html) {
 
    this.modelReady = false;
    this.workspaceObjectModelPath = path + '.workspaceObjects.' + this.id;
-   this.workspaceObjectModel = model.at(this.workspaceObjectModelPath);
 
    if (!this.html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
@@ -52,14 +51,10 @@ function WorkspaceObject(store, html) {
    this.mergeAttr({ id: _this.id, class: [_this.type] });
    this.mergeStyle({ position: 'absolute' });
 
-   model.fetch(path, function(err) {
-      if (!err) {
-         _this.modelReady = true;
-      }
-      _this.emit(WORKSPACE_OBJECT_EVENTS.modelFetched, err);
-   });
-
    model.subscribe(path, function() {
+      _this.modelReady = true;
+      _this.workspaceObjectModel = model.at(_this.workspaceObjectModelPath);
+
       _this.workspaceObjectModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
             var path = pathS.split('.'), last = path.pop(),
@@ -76,6 +71,8 @@ function WorkspaceObject(store, html) {
             }
          }
       });
+
+      _this.emit(WORKSPACE_OBJECT_EVENTS.modelFetched, null);
    });
 
    this.updateModel();

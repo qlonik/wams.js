@@ -48,20 +48,15 @@ function Workspace(store, srv) {
 
    this.modelReady = false;
    this.workspaceModelPath = path + '.workspaces.' + this.id;
-   this.workspaceModel = model.at(this.workspaceModelPath);
 
    this.html = util.cloneDeep(DEFAULT_HTML);
 
    this.mergeAttr({ id: _this.id, class: [_this.type] });
 
-   model.fetch(path, function(err) {
-      if (!err) {
-         _this.modelReady = true;
-      }
-      _this.emit(WORKSPACE_EVENTS.modelFetched, err);
-   });
-
    model.subscribe(path, function() {
+      _this.modelReady = true;
+      _this.workspaceModel = model.at(_this.workspaceModelPath);
+
       _this.workspaceModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
             var path = pathS.split('.'), last = path.pop(),
@@ -78,6 +73,8 @@ function Workspace(store, srv) {
             }
          }
       });
+
+      _this.emit(WORKSPACE_EVENTS.modelFetched, null);
    });
 
    this.updateModel();

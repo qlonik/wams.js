@@ -37,14 +37,7 @@ function Client(store, socket) {
    this.clientReady = false;
    this.modelReady = false;
    this.clientModelPath = path + '.clients.' + this.id;
-   this.clientModel = model.at(this.clientModelPath);
 
-   model.fetch(path, function(err) {
-      if (!err) {
-         _this.modelReady = true;
-      }
-      _this.emit(CLIENT_EVENTS.modelFetched, err);
-   });
    this.socket.on(SOCKET_EVENTS.ready, function(err) {
       if (!err) {
          _this.clientReady = true;
@@ -56,6 +49,9 @@ function Client(store, socket) {
    });
 
    model.subscribe(path, function() {
+      _this.modelReady = true;
+      _this.clientModel = model.at(_this.clientModelPath);
+
       _this.clientModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
             var path = pathS.split('.'), last = path.pop(),
@@ -72,6 +68,8 @@ function Client(store, socket) {
             }
          }
       });
+
+      _this.emit(CLIENT_EVENTS.modelFetched, null);
    });
 
    this.socket.on(SOCKET_EVENTS.MTEvent, function(err, ev) {
