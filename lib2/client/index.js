@@ -18,7 +18,8 @@ var SOCKET_EVENTS = util.SOCKET_EVENTS,
       h: 0,
       r: 0,       // rotation
       s: 100      // scale
-   };
+   },
+   TYPE = util.CLIENT_TYPE;
 
 function WAMS() {
    EventEmitter.call(this);
@@ -44,7 +45,7 @@ function WAMS() {
    racer.ready(function(mainModel) {
       _this.modelReady = true;
       _this.model = mainModel;
-      _this.browserModelPath = path + '.clients.' + _this.id;
+      _this.browserModelPath = path + '.' + TYPE + '.' + _this.id;
       _this.browserModel = mainModel.at(_this.browserModelPath);
 
       mainModel.subscribe(path, function() {
@@ -114,16 +115,16 @@ WAMS.prototype.sendMTEvent = function(ev) {
          mt: this.mtCreator.getEventMetadata(ev)
       };
 
-   if (util.indexOf(classes, 'workspaceObject') > -1) {
-      obj.src.type = 'workspaceObject';
+   if (util.indexOf(classes, util.WORKSPACE_OBJECT_TYPE) > -1) {
+      obj.src.type = util.WORKSPACE_OBJECT_TYPE;
       obj.src.id = target.id;
 
-      while (util.indexOf(parent.classList, 'workspace') === -1 && parent) {
+      while (util.indexOf(parent.classList, util.WORKSPACE_TYPE) === -1 && parent) {
          parent = parent.parentNode;
       }
       obj.src.wrkspc = parent.id;
-   } else if (util.indexOf(classes, 'workspace') > -1) {
-      obj.src.type = 'workspace';
+   } else if (util.indexOf(classes, util.WORKSPACE_TYPE) > -1) {
+      obj.src.type = util.WORKSPACE_TYPE;
       obj.src.id = target.id;
 
       obj.src.wrkspc = parent.id;
@@ -148,7 +149,7 @@ WAMS.prototype.getWorkspaceJSON = function(cb) {
             cb(null);
          } else {
             var res = uuids.map(function(uuid) {
-               return mainModel.get(mainPath + '.workspaces.' + uuid + '.html');
+               return mainModel.get(mainPath + '.' + util.WORKSPACE_TYPE + '.' + uuid + '.html');
             });
             if (res.length === 1) {
                res = res[0];

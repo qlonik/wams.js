@@ -36,7 +36,7 @@ function Client(store, socket) {
 
    this.clientReady = false;
    this.modelReady = false;
-   this.clientModelPath = path + '.clients.' + this.id;
+   this.clientModelPath = path + '.' + TYPE + '.' + this.id;
 
    this.updateModel();
    this.sendModel();

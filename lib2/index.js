@@ -21,9 +21,9 @@ var atLeastOneServer = false,
 model.fetch(path);
 
 function cleanModel() {
-   model.set(path + '.clients', {});
-   model.set(path + '.workspaces', {});
-   model.set(path + '.workspaceObjects', {});
+   model.set(path + '.' + util.WORKSPACE_TYPE, {});
+   model.set(path + '.' + util.WORKSPACE_OBJECT_TYPE, {});
+   model.set(path + '.' + util.CLIENT_TYPE, {});
 }
 
 // graceful shutdown on windows

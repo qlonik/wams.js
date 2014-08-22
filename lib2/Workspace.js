@@ -47,7 +47,7 @@ function Workspace(store, srv) {
    this.inner = [];
 
    this.modelReady = false;
-   this.workspaceModelPath = path + '.workspaces.' + this.id;
+   this.workspaceModelPath = path + '.' + TYPE + '.' + this.id;
 
    this.html = util.cloneDeep(DEFAULT_HTML);
 

@@ -43,7 +43,7 @@ function WorkspaceObject(store, html) {
    this.parent = [];
 
    this.modelReady = false;
-   this.workspaceObjectModelPath = path + '.workspaceObjects.' + this.id;
+   this.workspaceObjectModelPath = path + '.' + TYPE + '.' + this.id;
 
    if (!this.html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
