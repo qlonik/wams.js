@@ -43,12 +43,12 @@ function WAMS() {
       _this.store = racer.init(data.bundle);
    });
    racer.ready(function(mainModel) {
-      _this.modelReady = true;
       _this.model = mainModel;
       _this.browserModelPath = path + '.' + TYPE + '.' + _this.id;
       _this.browserModel = mainModel.at(_this.browserModelPath);
 
       mainModel.subscribe(path, function() {
+         _this.modelReady = true;
          _this.emit(BROWSER_EVENTS.modelFetched, null);
       });
    });
