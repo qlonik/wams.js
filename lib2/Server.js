@@ -22,9 +22,9 @@ var DEFAULT_OPTS = {
    STATIC_FOLDER = path.join(__dirname, 'public'),
    SERVER_EVENTS = util.SERVER_EVENTS;
 
-function Serv(racer, opts) {
+function Serv(store, opts) {
    EventEmitter.call(this);
-   this.racer = racer;
+   this.store = store;
    var _this = this;
 
    if (util.isUndefined(opts)) {
@@ -45,7 +45,7 @@ function Serv(racer, opts) {
 //   this.app.use(bodyParser.json());
 //   this.app.use(bodyParser.urlencoded());
 //   this.app.use(cookieParser());
-   this.app.use(racerBrowserChannel(this.racer.store));
+   this.app.use(racerBrowserChannel(this.store));
    this.app.use(express.static(path.resolve(STATIC_FOLDER)));
    if (util.isString(_this.opts.static)) {
       _this.app.use(express.static(path.resolve(_this.opts.static)));

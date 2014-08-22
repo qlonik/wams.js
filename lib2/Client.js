@@ -18,15 +18,16 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    },
    TYPE = util.CLIENT_TYPE;
 
-function Client(racer, socket) {
+function Client(store, socket) {
    EventEmitter.call(this);
-   this.racer = racer;
+   this.store = store;
    this.socket = socket;
 
    var _this = this,
-      model = racer.model,
-      path = racer.path;
+      model = store.createModel(),
+      path = util.RACER_PATH;
 
+   this.model = model;
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
@@ -142,7 +143,7 @@ Client.prototype.cleanModel = function() {
    model.del();
 };
 Client.prototype.sendModel = function() {
-   var _this = this, mainModel = this.racer.model;
+   var _this = this, mainModel = this.store.createModel();
 
    mainModel.bundle(function (err, b) {
       if (err) {

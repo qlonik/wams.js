@@ -11,7 +11,7 @@ var resolve = require('path').resolve,
 module.exports = function(server) {
    var router = express.Router();
 
-   server.racer.store.on('bundle', function(b) {
+   server.store.on('bundle', function(b) {
       b.require(clientModule, {expose: 'wams'});
    });
 
@@ -20,7 +20,7 @@ module.exports = function(server) {
    });
 
    router.get('/client.js', function(req, res, next) {
-      server.racer.store.bundle(clientDefaultJS, function(err, js) {
+      server.store.bundle(clientDefaultJS, function(err, js) {
          if (err) { return next(err); }
 
          res.type('js');

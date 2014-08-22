@@ -25,18 +25,19 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    },
    TYPE = util.WORKSPACE_TYPE;
 
-function Workspace(racer, srv) {
+function Workspace(store, srv) {
    EventEmitter.call(this);
-   this.racer = racer;
+   this.store = store;
 
    if (srv) {
       this.attachServer(srv);
    }
 
    var _this = this,
-      model = racer.model,
-      path = racer.path;
+      model = store.createModel(),
+      path = util.RACER_PATH;
 
+   this.model = model;
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
@@ -102,7 +103,7 @@ Workspace.prototype.attachServer = function(srv) {
          _this.emit(WORKSPACE_EVENTS.clientConnected, err);
          _this.emit(WORKSPACE_EVENTS.clientReady, err);
       } else {
-         client = new ClientCreator(_this.racer, socket);
+         client = new ClientCreator(_this.store, socket);
          _this.allConnectedClients.push(client);
 
          _this.emit(WORKSPACE_EVENTS.clientConnected, null, _this, client);

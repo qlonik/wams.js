@@ -16,12 +16,7 @@ var atLeastOneServer = false,
       redis: redis.createClient()
    }),
    model = store.createModel(),
-   path = util.RACER_PATH,
-   racerObj = {
-      store: store,
-      model: model,
-      path: path
-   };
+   path = util.RACER_PATH;
 
 function cleanModel() {
    model.del(path + '.clients');
@@ -54,11 +49,11 @@ function WAMS(port) {
    var srv;
 
    if (port || !atLeastOneServer) {
-      srv = new Server(racerObj, port ? { port: port } : {});
+      srv = new Server(store, port ? { port: port } : {});
       atLeastOneServer = true;
    }
 
-   return new Workspace(racerObj, srv);
+   return new Workspace(store, srv);
 }
 
 WAMS.util = util;
@@ -70,10 +65,10 @@ WAMS._Client = Client;
 
 WAMS.Workspace = WAMS;
 WAMS.WorkspaceObject = function(html) {
-   return new WorkspaceObject(racerObj, html);
+   return new WorkspaceObject(store, html);
 };
 WAMS.Client = function(socket) {
-   return new Client(racerObj, socket);
+   return new Client(store, socket);
 };
 
 module.exports = WAMS;

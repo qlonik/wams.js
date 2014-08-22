@@ -26,15 +26,16 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    TYPE = util.WORKSPACE_OBJECT_TYPE;
 
 
-function WorkspaceObject(racer, html) {
+function WorkspaceObject(store, html) {
    EventEmitter.call(this);
-   this.racer = racer;
+   this.store = store;
    this.html = html;
 
    var _this = this,
-      model = racer.model,
-      path = racer.path;
+      model = store.createModel(),
+      path = util.RACER_PATH;
 
+   this.model = model;
    this.id = model.id();
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
@@ -42,8 +43,8 @@ function WorkspaceObject(racer, html) {
    this.parent = [];
 
    this.modelReady = false;
-   this.workspaceObjectModelPath = this.racer.path + '.workspaceObjects.' + this.id;
-   this.workspaceObjectModel = this.racer.model.at(this.workspaceObjectModelPath);
+   this.workspaceObjectModelPath = path + '.workspaceObjects.' + this.id;
+   this.workspaceObjectModel = model.at(this.workspaceObjectModelPath);
 
    if (!this.html) {
       this.html = util.cloneDeep(DEFAULT_HTML);
