@@ -23,13 +23,11 @@ var SOCKET_EVENTS = util.SOCKET_EVENTS,
 function WAMS() {
    EventEmitter.call(this);
 
-   var _this = this;
+   var _this = this,
+      path = util.RACER_PATH;
 
    this.connection = new Connection();
    this.mtCreator = new MTCreator();
-   this.racer = {
-      path: util.RACER_PATH
-   };
    this.shape = util.clone(DEFAULT_SHAPE);
    this.mergeShape({ w: window.innerWidth, h: window.innerHeight });
 
@@ -40,12 +38,12 @@ function WAMS() {
       if (err) { throw err; }
 
       _this.id = data.id;
-      _this.racer.store = racer.init(data.bundle);
+      _this.store = racer.init(data.bundle);
    });
    racer.ready(function(mainModel) {
       _this.modelReady = true;
-      _this.racer.model = mainModel;
-      _this.browserModelPath = _this.racer.path + '.clients.' + _this.id;
+      _this.model = mainModel;
+      _this.browserModelPath = path + '.clients.' + _this.id;
       _this.browserModel = mainModel.at(_this.browserModelPath);
       _this.emit(BROWSER_EVENTS.modelFetched, null);
    });
@@ -134,8 +132,8 @@ WAMS.prototype.getWorkspaceJSON = function(cb) {
    var _this = this;
 
    function get(err) {
-      var model = _this.browserModel, mainModel = _this.racer.model,
-         mainPath = _this.racer.path;
+      var model = _this.browserModel, mainModel = _this.model,
+         mainPath = util.RACER_PATH;
 
       if (err) {
          cb(err);
