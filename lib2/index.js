@@ -19,9 +19,9 @@ var atLeastOneServer = false,
    path = util.RACER_PATH;
 
 function cleanModel() {
-   model.del(path + '.clients');
-   model.del(path + '.workspaces');
-   model.del(path + '.workspaceObjects');
+   model.set(path + '.clients', {});
+   model.set(path + '.workspaces', {});
+   model.set(path + '.workspaceObjects', {});
 }
 
 // graceful shutdown on windows
