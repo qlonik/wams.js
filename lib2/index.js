@@ -18,6 +18,8 @@ var atLeastOneServer = false,
    model = store.createModel(),
    path = util.RACER_PATH;
 
+model.fetch(path);
+
 function cleanModel() {
    model.set(path + '.clients', {});
    model.set(path + '.workspaces', {});
