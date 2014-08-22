@@ -106,23 +106,35 @@ util.merge(Client.prototype, EventEmitter.prototype);
 
 
 Client.prototype.updateModel = function(path, value) {
-   var _this = this, model = this.clientModel;
+   var _this = this;
 
-   if (!path) {
-      model.setDiff('id', _this.id);
-      model.setDiff('type', _this.type);
-      model.setDiffDeep('shape', _this.shape);
-      model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
-      model.setDiffDeep('storage', _this.storage);
-   } else {
-      if (util.isArray(value)) {
-         model.setArrayDiffDeep(path, value);
+   function update(err) {
+      if (err) { throw err; }
+
+      var model = _this.clientModel;
+
+      if (!path) {
+         model.setDiff('id', _this.id);
+         model.setDiff('type', _this.type);
+         model.setDiffDeep('shape', _this.shape);
+         model.setArrayDiff('workspaces', util.map(_this.workspaces, util.getID));
+         model.setDiffDeep('storage', _this.storage);
       } else {
-         model.setDiffDeep(path, value);
+         if (util.isArray(value)) {
+            model.setArrayDiffDeep(path, value);
+         } else {
+            model.setDiffDeep(path, value);
+         }
       }
+
+      _this.emit(CLIENT_EVENTS.modelUpdated, null);
    }
 
-   _this.emit(CLIENT_EVENTS.modelUpdated, null);
+   if (this.modelReady) {
+      update(null);
+   } else {
+      this.once(CLIENT_EVENTS.modelFetched, update);
+   }
 };
 Client.prototype.cleanModel = function() {
    var model = this.clientModel;

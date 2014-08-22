@@ -84,25 +84,37 @@ util.merge(WorkspaceObject.prototype, EventEmitter.prototype);
 
 
 WorkspaceObject.prototype.updateModel = function(path ,value) {
-   var _this = this, model = this.workspaceObjectModel;
+   var _this = this;
 
-   if (!path) {
-      model.setDiff('id', _this.id);
-      model.setDiff('type', _this.type);
-      model.setDiffDeep('shape', _this.shape);
-      model.setDiffDeep('storage', _this.storage);
-      model.setArrayDiff('parent', util.map(_this.parent, util.getID));
+   function update(err) {
+      if (err) { throw err; }
 
-      model.setDiffDeep('html', _this.html);
-   } else {
-      if (util.isArray(value)) {
-         model.setArrayDiffDeep(path, value);
+      var model = _this.workspaceObjectModel;
+
+      if (!path) {
+         model.setDiff('id', _this.id);
+         model.setDiff('type', _this.type);
+         model.setDiffDeep('shape', _this.shape);
+         model.setDiffDeep('storage', _this.storage);
+         model.setArrayDiff('parent', util.map(_this.parent, util.getID));
+
+         model.setDiffDeep('html', _this.html);
       } else {
-         model.setDiffDeep(path, value);
+         if (util.isArray(value)) {
+            model.setArrayDiffDeep(path, value);
+         } else {
+            model.setDiffDeep(path, value);
+         }
       }
+
+      _this.emit(WORKSPACE_OBJECT_EVENTS.modelUpdated, null);
    }
 
-   _this.emit(WORKSPACE_OBJECT_EVENTS.modelUpdated, null);
+   if (this.modelReady) {
+      update(null);
+   } else {
+      this.once(WORKSPACE_OBJECT_EVENTS.modelFetched, update);
+   }
 };
 WorkspaceObject.prototype.equal = function(param) {
    return !!(
