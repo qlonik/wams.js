@@ -51,6 +51,13 @@ function WorkspaceObject(racer, html) {
    this.mergeAttr({ id: _this.id, class: [_this.type] });
    this.mergeStyle({ position: 'absolute' });
 
+   model.fetch(path, function(err) {
+      if (!err) {
+         _this.modelReady = true;
+      }
+      _this.emit(WORKSPACE_OBJECT_EVENTS.modelFetched, err);
+   });
+
    model.subscribe(path, function() {
       _this.workspaceObjectModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
