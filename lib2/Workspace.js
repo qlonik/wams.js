@@ -20,7 +20,12 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    DEFAULT_HTML = {
       tag: 'div',
       attr: {},
-      style: {},
+      style: {
+         left: DEFAULT_SHAPE.x + 'px',
+         top: DEFAULT_SHAPE.y + 'px',
+         width: DEFAULT_SHAPE.w + 'px',
+         height: DEFAULT_SHAPE.h + 'px'
+      },
       inner: []
    },
    TYPE = util.WORKSPACE_TYPE;
@@ -28,10 +33,6 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
 function Workspace(store, srv) {
    EventEmitter.call(this);
    this.store = store;
-
-   if (srv) {
-      this.attachServer(srv);
-   }
 
    var _this = this,
       model = store.createModel(),
@@ -45,18 +46,35 @@ function Workspace(store, srv) {
    this.parent = [];
    this.clients = [];
    this.inner = [];
+   this.hasServer = false;
 
    this.modelReady = false;
    this.workspaceModelPath = path + '.' + TYPE + '.' + this.id;
 
    this.html = util.cloneDeep(DEFAULT_HTML);
 
+   this._innerUpdaters = {};
+
    this.updateModel();
    this.mergeAttr({ id: _this.id, class: [_this.type] });
+   this.mergeStyle({ position: 'absolute' });
 
-   model.subscribe(path, function() {
+   if (srv) {
+      this.attachServer(srv);
+   }
+
+//   model.fn('appendPX', function(num) {
+//      return num + 'px';
+//   });
+
+   model.subscribe(path, function(err) {
+      if (err) {
+         return _this.emit(WORKSPACE_EVENTS.modelFetched, err);
+      }
+
       _this.modelReady = true;
       _this.workspaceModel = model.at(_this.workspaceModelPath);
+      console.log('model subscribed -- from workspace ' + _this.id);
 
       _this.workspaceModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
@@ -77,6 +95,11 @@ function Workspace(store, srv) {
 
       _this.emit(WORKSPACE_EVENTS.modelFetched, null);
    });
+
+//      _this.workspaceModel.start('appendPX', 'html.style.left', 'shape.x');
+//      _this.workspaceModel.start('appendPX', 'html.style.top', 'shape.y');
+//      _this.workspaceModel.start('appendPX', 'html.style.width', 'shape.w');
+//      _this.workspaceModel.start('appendPX', 'html.style.height', 'shape.x');
 }
 
 util.merge(Workspace.prototype, EventEmitter.prototype);
@@ -90,6 +113,7 @@ util.merge(Workspace.prototype, EventEmitter.prototype);
 Workspace.prototype.attachServer = function(srv) {
    this.srv = srv;
    this.allConnectedClients = new StorageCreator();
+   this.hasServer = true;
 
    var client,
       _this = this;
@@ -125,6 +149,7 @@ Workspace.prototype.attachServer = function(srv) {
          _this.emit(WORKSPACE_EVENTS.clientDisconnected, null, _this, client);
       }
    });
+   this.updateModel('hasServer', _this.hasServer);
 };
 Workspace.prototype.updateModel = function(path, value) {
    var _this = this;
@@ -142,6 +167,7 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setArrayDiff('parent', util.map(_this.parent, util.getID));
          model.setArrayDiff('clients', util.map(_this.clients, util.getID));
          model.setArrayDiff('inner', util.map(_this.inner, util.getID));
+         model.setDiff('hasServer', _this.hasServer);
 
          model.setDiffDeep('html', _this.html);
       } else {
@@ -184,6 +210,27 @@ Workspace.prototype.mergeShape = function(newShape) {
    util.merge(this.shape, newShape);
 
    this.updateModel('shape', this.shape);
+
+   var newStyle;
+   if (newShape.x) {
+      newStyle = newStyle || {};
+      newStyle.left = newShape.x + 'px';
+   }
+   if (newShape.y) {
+      newStyle = newStyle || {};
+      newStyle.top = newShape.y + 'px';
+   }
+   if (newShape.w) {
+      newStyle = newStyle || {};
+      newStyle.width = newShape.w + 'px';
+   }
+   if (newShape.h) {
+      newStyle = newStyle || {};
+      newStyle.height = newShape.h + 'px';
+   }
+   if (newStyle) {
+      this.mergeStyle(newStyle);
+   }
 };
 Workspace.prototype.mergeStyle = function(newStyle) {
    util.merge(this.html.style, newStyle);
@@ -196,10 +243,37 @@ Workspace.prototype.mergeAttr = function(newAttr) {
    this.updateModel('html.attr', this.html.attr);
 };
 Workspace.prototype.addElement = function(el) {
+   var _this = this, updater;
+
    this.inner.push(el);
    this.html.inner.push(el.html);
 
    el.addParent(this);
+
+   this._innerUpdaters[el.id] = updater = function startUpdater() {
+      var workspaceHtmlModel = _this.workspaceModel.at('html'),
+         elHtmlModel = (el.workspaceModel || el.workspaceObjectModel).at('html');
+
+      startUpdater.listener = elHtmlModel.on('all', '**',
+         function(path, event, val, prev, passed) {
+            var i = util.findIndex(_this.html.inner, function(html) {
+               return (html.attr.id === el.id);
+            });
+            if (event === 'change') {
+               workspaceHtmlModel.setDiff('inner.' + i + '.' + path, val);
+            }
+         });
+   };
+
+   if (el.modelReady) {
+      updater();
+   } else {
+      if (el.type === util.WORKSPACE_TYPE) {
+         el.once(WORKSPACE_EVENTS.modelFetched, updater);
+      } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+         el.once(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
+      }
+   }
 
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
@@ -211,8 +285,11 @@ Workspace.prototype.addElement = function(el) {
  * @param {String|WorkspaceObject} param Parameter of element
  */
 Workspace.prototype.removeElement = function(param) {
+   var _this = this, els, updater,
+      model = this.model;
+
    //remove from inner array
-   util.remove(this.inner, function(el) {
+   els = util.remove(this.inner, function(el) {
       return el.equal(param);
    });
    //remove from html object
@@ -223,7 +300,22 @@ Workspace.prototype.removeElement = function(param) {
          );
    });
 
-   el.removeParent(this);
+   els.forEach(function(el) {
+      el.removeParent(_this);
+
+      updater = _this._innerUpdaters[el.id];
+      if (el.modelReady) {
+         model.removeListener('all', updater.listener);
+      } else {
+         if (el.type === util.WORKSPACE_TYPE) {
+            el.removeListener(WORKSPACE_EVENTS.modelFetched, updater);
+         } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+            el.removeListener(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
+         }
+      }
+
+      delete _this._innerUpdaters[el.id];
+   });
 
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);

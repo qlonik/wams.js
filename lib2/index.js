@@ -47,6 +47,12 @@ process.on('SIGINT', function() {
    });
 });
 
+//model.subscribe('wams', function() {
+//   model.on('all', '**', function() {
+//      console.log(arguments);
+//   });
+//});
+
 function WAMS(port) {
    var srv;
 

@@ -51,9 +51,12 @@ function Client(store, socket) {
       _this.cleanModel();
    });
 
-   model.subscribe(path, function() {
+   model.subscribe(path, function(err) {
+      if (err) { return _this.emit(CLIENT_EVENTS.modelFetched, err); }
+
       _this.modelReady = true;
       _this.clientModel = model.at(_this.clientModelPath);
+      console.log('model subscribed -- from client ' + _this.id);
 
       _this.clientModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
@@ -90,12 +93,73 @@ function Client(store, socket) {
          });
 
          if (type === 'workspace') {
-            workspace.emit(mt.type, null, workspace, _this, mt);
+            workspace.emit(
+               /**
+                * Type of the event
+                * @type {String}
+                */
+               mt.type,
+               /**
+                * Error if occured
+                * @type {null|String}
+                */
+               null,
+               /**
+                * Target on which mt event happens
+                * @type {Workspace}
+                */
+               workspace,
+               /**
+                * Metadata of the event
+                * @type {{}}
+                */
+               mt,
+               /**
+                * Workspace that contains event
+                * In this case it is equal to the target
+                * @type {Workspace}
+                */
+               workspace,
+               /**
+                * Client from which this event happened
+                * @type {Client}
+                */
+               _this);
          } else if (type === 'workspaceObject') {
             element = util.find(workspace.inner, function (el) {
                return el.equal(id);
             });
-            element.emit(mt.type, null, workspace, _this, mt);
+            element.emit(
+               /**
+                * Type of the event
+                * @type {String}
+                */
+               mt.type,
+               /**
+                * Error if occured
+                * @type {null|String}
+                */
+               null,
+               /**
+                * Target on which mt event happens
+                * @type {WorkspaceObject}
+                */
+               element,
+               /**
+                * Metadata of the event
+                * @type {{}}
+                */
+               mt,
+               /**
+                * Workspace that contains event
+                * @type {Workspace}
+                */
+               workspace,
+               /**
+                * Client from which this event happened
+                * @type {Client}
+                */
+               _this);
          }
       }
    });

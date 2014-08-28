@@ -20,7 +20,12 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    DEFAULT_HTML = {
       tag: 'div',
       attr: {},
-      style: {},
+      style: {
+         left: DEFAULT_SHAPE.x + 'px',
+         top: DEFAULT_SHAPE.y + 'px',
+         width: DEFAULT_SHAPE.w + 'px',
+         height: DEFAULT_SHAPE.h + 'px'
+      },
       inner: []
    },
    TYPE = util.WORKSPACE_OBJECT_TYPE;
@@ -51,11 +56,14 @@ function WorkspaceObject(store, html) {
 
    this.updateModel();
    this.mergeAttr({ id: _this.id, class: [_this.type] });
-   this.mergeStyle({ position: 'absolute' });
+   this.mergeStyle({ position: 'absolute', 'background-color': 'rgba(255, 255, 255, 0.5)' });
 
-   model.subscribe(path, function() {
+   model.subscribe(path, function(err) {
+      if (err) { return _this.emit(WORKSPACE_OBJECT_EVENTS.modelFetched, err); }
+
       _this.modelReady = true;
       _this.workspaceObjectModel = model.at(_this.workspaceObjectModelPath);
+      console.log('model subscribed -- from workspaceObject ' + _this.id);
 
       _this.workspaceObjectModel.on('change', '**', function(pathS, val, old, passed) {
          if (passed.$remote) {
@@ -121,6 +129,7 @@ WorkspaceObject.prototype.equal = function(param) {
       );
 };
 WorkspaceObject.prototype.mergeAttr = function(newAttr) {
+   this.html.attr = this.html.attr || {};
    util.merge(this.html.attr, newAttr, function(a, b) {
       if (util.isArray(a)) {
          if (util.isUndefined(b)) {
@@ -142,9 +151,36 @@ WorkspaceObject.prototype.mergeAttr = function(newAttr) {
    this.updateModel('html.attr', this.html.attr);
 };
 WorkspaceObject.prototype.mergeStyle = function(newStyle) {
+   this.html.style = this.html.style || {};
    util.merge(this.html.style, newStyle);
 
    this.updateModel('html.style', this.html.style);
+};
+WorkspaceObject.prototype.mergeShape = function(newShape) {
+   util.merge(this.shape, newShape);
+
+   this.updateModel('shape', this.shape);
+
+   var newStyle;
+   if (newShape.x) {
+      newStyle = newStyle || {};
+      newStyle.left = newShape.x + 'px'
+   }
+   if (newShape.y) {
+      newStyle = newStyle || {};
+      newStyle.top = newShape.y + 'px'
+   }
+   if (newShape.w) {
+      newStyle = newStyle || {};
+      newStyle.width = newShape.w + 'px'
+   }
+   if (newShape.h) {
+      newStyle = newStyle || {};
+      newStyle.height = newShape.h + 'px'
+   }
+   if (newStyle) {
+      this.mergeStyle(newStyle);
+   }
 };
 WorkspaceObject.prototype.set = function(key, val) {
    this.storage[key] = val;

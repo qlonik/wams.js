@@ -27,6 +27,7 @@ function WAMS() {
    var _this = this,
       path = util.RACER_PATH;
 
+   this.path = path;
    this.connection = new Connection();
    this.mtCreator = new MTCreator();
    this.shape = util.clone(DEFAULT_SHAPE);

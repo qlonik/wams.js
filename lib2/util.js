@@ -36,7 +36,12 @@ var isServer = process.title !== 'browser',
       MTEvent: 'mt'
    },
    HAMMER_EVENTS = [
-      'tap', 'doubletap', 'pan', 'swipe', 'press', 'pinch', 'rotate'
+      ['pan', 'panstart', 'panmove', 'panend', 'pancancel', 'panleft', 'panright', 'panup', 'pandown'],
+      ['pinch', 'pinchstart', 'pinchmove', 'pinchend', 'pinchcancel', 'pinchin', 'pinchout'],
+      'press',
+      ['rotate', 'rotatestart', 'rotatemove', 'rotateend', 'rotatecancel'],
+      ['swipe', 'swipeleft', 'swiperight', 'swipeup', 'swipedown'],
+      'tap'
    ],
    BROWSER_EVENTS = {
       modelFetched: 'modelFetched',
