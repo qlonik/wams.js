@@ -56,7 +56,9 @@ wams.on('workspaceAttached', function() {
     */
    function prepareWSObj(wso) {
       var listener, tmp = {}, mt = wams.createMTElement(wso), id = wso.id,
-         wsoM = model.at(wams.path + '.' + util.WORKSPACE_OBJECT_TYPE + '.' + id);
+         wsoM = model.at(wams.path + '.' + util.WORKSPACE_OBJECT_TYPE + '.' + id),
+         parentWS = wso.parentNode, wsID = parentWS.id,
+         wsM = model.at(wams.path + '.' + util.WORKSPACE_TYPE + '.' + wsID);
 
       function prepare() {
          if (DEBUG && id !== wsoM.get('id')) {
@@ -84,19 +86,42 @@ wams.on('workspaceAttached', function() {
 
          util.forEach(util.HAMMER_EVENTS, startReportingEvents);
          mt.on('panstart', function (ev) {
-            var shape = model.get(wams.path + '.' + util.WORKSPACE_OBJECT_TYPE
-               + '.' + id + '.shape');
-            tmp.currX = shape.x || 0;
-            tmp.currY = shape.y || 0;
+            var boundRect = ev.target.getBoundingClientRect();
+            var shapeM = wsoM.get('shape');
+
+            tmp.x = boundRect.left;
+            tmp.y = boundRect.top;
+            tmp.mx = shapeM.x;
+            tmp.my = shapeM.y;
          });
          mt.on('pan', function (ev) {
-            var newX = tmp.currX + ev.deltaX,
-               newY = tmp.currY + ev.deltaY;
+            var newX = tmp.x + ev.deltaX,
+               newY = tmp.y + ev.deltaY,
+               newMX = tmp.mx + ev.deltaX,
+               newMY = tmp.my + ev.deltaY,
+               i, wsInnerHtml = wsM.get('html.inner'),
+               passing = {
+                  clientSourceID: wams.id
+               };
 
-            wsoM.setDiff('shape.x', newX);
-            wsoM.setDiff('html.style.left', newX + 'px');
-            wsoM.setDiff('shape.y', newY);
-            wsoM.setDiff('html.style.top', newY + 'px');
+            i = util.findIndex(wsInnerHtml, function(html) {
+               return (html.attr.id === id);
+            });
+
+            ev.target.style.left = newX + 'px';
+            ev.target.style.top = newY + 'px';
+            wsM.setDiff('html.inner.' + i + '.style.left', newX + 'px');
+            wsM.setDiff('html.inner.' + i + '.style.top', newY + 'px');
+//            wsM.pass(passing).setDiff('html.inner.' + i + '.style.left', newX + 'px');
+//            wsM.pass(passing).setDiff('html.inner.' + i + '.style.top', newY + 'px');
+
+            wsoM.setDiff('shape.x', newMX);
+            wsoM.setDiff('shape.y', newMY);
+
+//            wsoM.setDiff('shape.x', newX);
+//            wsoM.setDiff('html.style.left', newX + 'px');
+//            wsoM.setDiff('shape.y', newY);
+//            wsoM.setDiff('html.style.top', newY + 'px');
 
             if (DEBUG && ev.target.id !== wso.id) {
                throw new Error("Panning object that does not match selected");
@@ -111,17 +136,22 @@ wams.on('workspaceAttached', function() {
 //            model.setDiff(wsoP + '.html.style.top', newY + 'px');
          });
          mt.on('panend', function () {
-            delete tmp.currX;
-            delete tmp.currY;
+            delete tmp.x;
+            delete tmp.y;
+            delete tmp.mx;
+            delete tmp.my;
          });
          listener = wsoM.on('change', 'html.**', function (path, val, prev, passed) {
             var segments = path.split('.'), num,
                field = segments.shift(), key = segments.shift();
 
             if (field === 'style') {
-               wso.style[key] = val;
-               num = +val.split('').slice(0, -2).join('');
+               console.log(arguments);
+               if (passed.$remote || (key !== 'left' && key !== 'top')) {
+                  wso.style[key] = val;
+//               num = +val.split('').slice(0, -2).join('');
 //               wsoM.setDiff('shape.' + R2H[key], num);
+               }
             } else if (field === 'attr') {
                if (util.isArray(val)) {
                   val = val.join(' ');
@@ -201,6 +231,21 @@ wams.on('workspaceAttached', function() {
                }
             }
          });
+         wsM.on('all', 'html.inner.*.style.**',
+            function (index, path, ev, val, prev, passed) {
+//               console.log(arguments);
+               var elID = wsM.get('html.inner.' + index + '.attr.id'),
+                  el = document.getElementById(elID);
+
+               if (passed.$remote) {
+                  if (path === 'left') {
+                     el.style.left = val;
+                  }
+                  if (path === 'top') {
+                     el.style.top = val;
+                  }
+               }
+            });
 
          if (DEBUG) {
             wsM.on('all', '**', function () {

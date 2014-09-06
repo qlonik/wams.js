@@ -149,17 +149,20 @@ WorkspaceObject.prototype.mergeAttr = function(newAttr) {
    });
 
    this.updateModel('html.attr', this.html.attr);
+   this.updateParents();
 };
 WorkspaceObject.prototype.mergeStyle = function(newStyle) {
    this.html.style = this.html.style || {};
    util.merge(this.html.style, newStyle);
 
    this.updateModel('html.style', this.html.style);
+   this.updateParents();
 };
 WorkspaceObject.prototype.mergeShape = function(newShape) {
    util.merge(this.shape, newShape);
 
    this.updateModel('shape', this.shape);
+   this.updateParents();
 
    var newStyle;
    if (newShape.x) {
@@ -196,6 +199,15 @@ WorkspaceObject.prototype.get = function(key) {
    return this.storage[key];
 };
 WorkspaceObject.prototype.addParent = function(parent) {
+   var relShape;
+
+   if (!this.parent.length) {
+      relShape = parent.getShapeRelativeTopParent();
+      relShape.x += this.shape.x;
+      relShape.y += this.shape.y;
+      this.mergeShape(relShape);
+   }
+
    this.parent.push(parent);
 
    this.updateModel('parent', util.map(this.parent, util.getID));
@@ -206,6 +218,10 @@ WorkspaceObject.prototype.removeParent = function(param) {
    });
 
    this.updateModel('parent', util.map(this.parent, util.getID));
+};
+WorkspaceObject.prototype.updateParents = function() {
+   //todo
+   //update html of all parents whenever html of this object is updated
 };
 
 module.exports = WorkspaceObject;

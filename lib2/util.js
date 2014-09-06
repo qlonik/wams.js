@@ -46,6 +46,17 @@ var isServer = process.title !== 'browser',
    BROWSER_EVENTS = {
       modelFetched: 'modelFetched',
       modelUpdated: 'modelUpdated'
+   },
+   //help convert regular to html and html to regular shape
+   REGULAR_TO_HTML_AND_BACK = {
+      x: 'left',
+      y: 'top',
+      w: 'width',
+      h: 'height',
+      left: 'x',
+      top: 'y',
+      width: 'w',
+      height: 'h'
    };
 
 function notImplemented(func) {
@@ -97,5 +108,6 @@ exports.CLIENT_EVENTS = CLIENT_EVENTS;
 exports.SOCKET_EVENTS = SOCKET_EVENTS;
 exports.HAMMER_EVENTS = HAMMER_EVENTS;
 exports.BROWSER_EVENTS = BROWSER_EVENTS;
+exports.R2H = REGULAR_TO_HTML_AND_BACK;
 
 exports.getID = getID;

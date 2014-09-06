@@ -4,8 +4,15 @@ var util = WAMS.util;
 
 var MAX_HANDS = 4;
 
-mainWS = WAMS(3000);
-tableWS = WAMS();
+mainWS = WAMS.Workspace(3000);
+tableWS = WAMS.Workspace();
+tableElement = WAMS.WorkspaceObject({
+   tag: 'img',
+   attr: {
+      class: ['card', 'mt'],
+      src: 'http://dc181.4shared.com/img/z5oj2oMO/s7/12a0f97e110/Playing_Card_Club.png'
+   }
+});
 handWS = [];
 var handCount = 0,
    tableConnected = false;
@@ -72,11 +79,27 @@ var addClientHandler = function(err, ws, client) {
    }
 };
 var addClientHandler2 = function(err, ws, client) {
-   client.set('role', 'table');
-   client.set('index', handCount);
-   handCount++;
+   if (!tableConnected) {
+      client.set('role', 'table');
+      client.set('index', handCount);
 
-   tableWS.addClient(client);
+      tableWS.addClient(client);
+      tableConnected = true;
+   } else {
+      client.set('role', 'hand');
+      client.set('index', handCount);
+
+      handCount++;
+
+      var hand = WAMS.Workspace();
+      hand.mergeStyle({ background: 'blue' });
+      hand.set('role', 'handWS');
+      hand.set('index', handCount);
+
+      handWS.push(hand);
+      hand.addClient(client);
+      tableConnected = false;
+   }
 };
 var readyClientHandler = function(err, ws, client) {
    var role = client.get('role'), index;
@@ -114,6 +137,7 @@ var readyClientHandler = function(err, ws, client) {
             h: client.shape.h,
             r: index * 90
          });
+         wrkspc.addElement(tableElement);
       }
    });
 };
@@ -141,7 +165,7 @@ var handlePan = function(err, target, data, ws, client) {
          if (!found) {
             //TODO
 //            if ()
-//            ws.addElement(target);
+            ws.addElement(target);
          }
       }
 
@@ -174,21 +198,13 @@ tableWS.set('role', 'table');
 tableWS.mergeStyle({ background: 'darkGreen' });
 tableWS.on('pan', handlePan);
 
-var tableElement = WAMS.WorkspaceObject({
-   tag: 'img',
-   attr: {
-      class: ['card', 'mt'],
-      src: 'http://dc181.4shared.com/img/z5oj2oMO/s7/12a0f97e110/Playing_Card_Club.png'
-   }
-});
 tableElement.mergeShape({ w: 150, h: 200 });
 tableWS.addElement(tableElement);
 
 tableElement.on('pan', handlePan);
-tableElement.on('panend', handlePanEnd);
+//tableElement.on('panend', handlePanEnd);
 
-var mainModel = tableWS.model,
-   mainPath = util.RACER_PATH;
+mainModel = tableWS.model;
 
 //mainWS.on(WAMS.util.WORKSPACE_EVENTS.clientConnected, addClientHandler);
 mainWS.on(WAMS.util.WORKSPACE_EVENTS.clientConnected, addClientHandler2);

@@ -43,7 +43,7 @@ function Workspace(store, srv) {
    this.type = TYPE;
    this.shape = util.clone(DEFAULT_SHAPE);
    this.storage = {};
-   this.parent = [];
+   this.parent = undefined;
    this.clients = [];
    this.inner = [];
    this.hasServer = false;
@@ -164,7 +164,8 @@ Workspace.prototype.updateModel = function(path, value) {
          model.setDiff('type', _this.type);
          model.setDiffDeep('shape', _this.shape);
          model.setDiffDeep('storage', _this.storage);
-         model.setArrayDiff('parent', util.map(_this.parent, util.getID));
+//         model.setArrayDiff('parent', util.map(_this.parent, util.getID));
+         model.setArrayDiff('parent', _this.parent ? _this.parent.id : _this.parent);
          model.setArrayDiff('clients', util.map(_this.clients, util.getID));
          model.setArrayDiff('inner', util.map(_this.inner, util.getID));
          model.setDiff('hasServer', _this.hasServer);
@@ -243,13 +244,50 @@ Workspace.prototype.mergeAttr = function(newAttr) {
    this.updateModel('html.attr', this.html.attr);
 };
 Workspace.prototype.addElement = function(el) {
-   var _this = this, updater;
+   var _this = this, rel = {}, updater, relShape, convertedElHTML;
 
-   this.inner.push(el);
-   this.html.inner.push(el.html);
+   if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+      relShape = _this.getShapeRelativeTopParent();
+
+      rel.x = el.shape.x - relShape.x;
+      rel.y = el.shape.y - relShape.y;
+      rel.w = el.shape.w;
+      rel.h = el.shape.h;
+
+//      console.log(relShape);
+//      console.log(rel);
+//      console.log(_this.shape);
+
+      /*
+      if (
+         //top
+         (rel.y + rel.h >= _this.shape.y) &&
+         //right
+         (rel.x <= _this.shape.x + _this.shape.w) &&
+         //bottom
+         (rel.y <= _this.shape.y + _this.shape.h) &&
+         //left
+         (rel.x + rel.w >= _this.shape.x)
+         ) {
+         */
+//         console.log(true);
+         convertedElHTML = util.cloneDeep(el.html);
+         convertedElHTML.style.left = rel.x + 'px';
+         convertedElHTML.style.top = rel.y + 'px';
+
+         this.inner.push(el);
+         this.html.inner.push(convertedElHTML);
+         /*
+      }
+      */
+   } else {
+      this.inner.push(el);
+      this.html.inner.push(el.html);
+   }
 
    el.addParent(this);
 
+   /*
    this._innerUpdaters[el.id] = updater = function startUpdater() {
       var workspaceHtmlModel = _this.workspaceModel.at('html'),
          elHtmlModel = (el.workspaceModel || el.workspaceObjectModel).at('html');
@@ -274,6 +312,56 @@ Workspace.prototype.addElement = function(el) {
          el.once(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
       }
    }
+   */
+
+   this._innerUpdaters[el.id] = updater = function startUpdater() {
+      var workspaceHtmlModel = _this.workspaceModel.at('html'),
+         elShapeModel = (el.workspaceModel || el.workspaceObjectModel).at('shape');
+
+      startUpdater.listeners = startUpdater.listeners || [];
+      startUpdater.listeners.push({
+         ev: 'all',
+         listener: elShapeModel.on('all', '**',
+            function (path, event, val, prev, passed) {
+               var i, rel, relShape;
+
+               i = util.findIndex(_this.html.inner, function(html) {
+                  return (html.attr.id === el.id);
+               });
+               if (event === 'change' && (path === 'x' || path === 'y')) {
+                  relShape = _this.getShapeRelativeTopParent();
+                  rel = val - relShape[path];
+                  workspaceHtmlModel.setDiff('inner.' + i + '.style.' + util.R2H[path], rel + 'px');
+               }
+            })
+      });
+//      startUpdater.listeners.push({
+//         type: 'all',
+//         func: elShapeModel.on('all', '**', function () {
+//            console.log(arguments);
+//         })
+//      });
+   };
+
+   if (_this.modelReady && el.modelReady) {
+      updater();
+   } else if (_this.modelReady && !el.modelReady) {
+      if (el.type === util.WORKSPACE_TYPE) {
+         el.once(WORKSPACE_EVENTS.modelFetched, updater);
+      } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+         el.once(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
+      }
+   } else if (!_this.modelReady && el.modelReady) {
+      _this.once(WORKSPACE_EVENTS.modelFetched, updater);
+   } else if (!_this.modelReady && !el.modelReady) {
+      _this.once(WORKSPACE_EVENTS.modelFetched, function() {
+         if (el.type === util.WORKSPACE_TYPE) {
+            el.once(WORKSPACE_EVENTS.modelFetched, updater);
+         } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+            el.once(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
+         }
+      });
+   }
 
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
@@ -285,7 +373,7 @@ Workspace.prototype.addElement = function(el) {
  * @param {String|WorkspaceObject} param Parameter of element
  */
 Workspace.prototype.removeElement = function(param) {
-   var _this = this, els, updater,
+   var _this = this, i, j, els, el, updater, listener,
       model = this.model;
 
    //remove from inner array
@@ -300,12 +388,18 @@ Workspace.prototype.removeElement = function(param) {
          );
    });
 
-   els.forEach(function(el) {
+   /**/
+//   els.forEach(function(el) {
+   for (i = 0; i < els.length; i++) {
+      el = els[i];
       el.removeParent(_this);
 
       updater = _this._innerUpdaters[el.id];
       if (el.modelReady) {
-         model.removeListener('all', updater.listener);
+         for (j = 0; j < updater.listeners.length; j++) {
+            listener = updater.listeners[j];
+            model.removeListener(listener.ev, listener.listener);
+         }
       } else {
          if (el.type === util.WORKSPACE_TYPE) {
             el.removeListener(WORKSPACE_EVENTS.modelFetched, updater);
@@ -314,8 +408,18 @@ Workspace.prototype.removeElement = function(param) {
          }
       }
 
+      /*
+      if (_this.modelReady && el.modelReady) {
+      } else if (_this.modelReady && !el.modelReady) {
+      } else if (!_this.modelReady && el.modelReady) {
+      } else if (!_this.modelReady && !el.modelReady) {
+      }
+      */
+
       delete _this._innerUpdaters[el.id];
-   });
+   }
+//   });
+   /**/
 
    this.updateModel('inner', util.map(this.inner, util.getID));
    this.updateModel('html.inner', this.html.inner);
@@ -337,16 +441,27 @@ Workspace.prototype.removeClient = function(param) {
    this.updateModel('clients', util.map(this.clients, util.getID));
 };
 Workspace.prototype.addParent = function(parent) {
-   this.parent.push(parent);
-
-   this.updateModel('parent', util.map(this.parent, util.getID));
+   this.parent = parent;
+   this.updateModel('parent', this.parent.id);
 };
-Workspace.prototype.removeParent = function(param) {
-   util.remove(this.parent, function(el) {
-      return el.equal(param);
-   });
+Workspace.prototype.removeParent = function() {
+   this.parent = undefined;
+   this.updateModel('parent', this.parent);
+};
+Workspace.prototype.getShapeRelativeTopParent = function() {
+   var _this = this, parent = this.parent,
+      relShape = { x : 0, y : 0 };
 
-   this.updateModel('parent', util.map(this.parent, util.getID));
+   relShape.x += _this.shape.x;
+   relShape.y += _this.shape.y;
+
+   while (parent) {
+      relShape.x += parent.shape.x;
+      relShape.y += parent.shape.y;
+      parent = parent.parent;
+   }
+
+   return relShape;
 };
 
 module.exports = Workspace;
