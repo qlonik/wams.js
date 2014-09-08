@@ -8,9 +8,6 @@ bigPicture = WAMS.WorkspaceObject({
    attr: {
       class: 'pic',
       src: 'http://placekitten.com/1000/500'
-   },
-   style: {
-      position: 'absolute'
    }
 });
 
