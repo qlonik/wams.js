@@ -71,6 +71,13 @@ WAMS._Workspace = Workspace;
 WAMS._WorkspaceObject = WorkspaceObject;
 WAMS._Client = Client;
 
+WAMS.Server = function(opt) {
+   opt = opt || {};
+   if (util.isNumber(opt)) {
+      opt = { port: opt };
+   }
+   return new Server(store, opt);
+};
 WAMS.Workspace = WAMS;
 WAMS.WorkspaceObject = function(html) {
    return new WorkspaceObject(store, html);
