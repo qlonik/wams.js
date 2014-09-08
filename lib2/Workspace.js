@@ -200,9 +200,12 @@ Workspace.prototype.set = function(key, val) {
    this.updateModel('storage', this.storage);
 };
 Workspace.prototype.del = function(key) {
+   var value = this.storage[key];
    delete this.storage[key];
 
    this.updateModel('storage', this.storage);
+
+   return value;
 };
 Workspace.prototype.get = function(key) {
    return this.storage[key];

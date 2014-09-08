@@ -233,9 +233,12 @@ Client.prototype.set = function(key, val) {
    this.updateModel('storage', this.storage);
 };
 Client.prototype.del = function(key) {
+   var value = this.storage[key];
    delete this.storage[key];
 
    this.updateModel('storage', this.storage);
+
+   return value;
 };
 Client.prototype.get = function(key) {
    return this.storage[key];
