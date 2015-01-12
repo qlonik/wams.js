@@ -12,8 +12,8 @@ var SERVER_EVENTS = util.SERVER_EVENTS,
    DEFAULT_SHAPE = {
       x: 0,
       y: 0,
-      w: 1000,
-      h: 1000,
+      w: 2000,
+      h: 2000,
       r: 0,       // rotation
       s: 100      // scale
    },
@@ -90,6 +90,8 @@ function Workspace(store, srv) {
             } else {
                el = val;
             }
+
+            _this.emit(WORKSPACE_EVENTS.modelUpdated, null);
          }
       });
 
@@ -187,6 +189,9 @@ Workspace.prototype.updateModel = function(path, value) {
    } else {
       this.once(WORKSPACE_EVENTS.modelFetched, update);
    }
+};
+Workspace.prototype.cleanModel = function() {
+   this.workspaceModel.del();
 };
 Workspace.prototype.equal = function(workspace) {
    return !!(
@@ -338,12 +343,14 @@ Workspace.prototype.addElement = function(el) {
                }
             })
       });
-//      startUpdater.listeners.push({
-//         type: 'all',
-//         func: elShapeModel.on('all', '**', function () {
-//            console.log(arguments);
-//         })
-//      });
+      /*
+      startUpdater.listeners.push({
+         ev: 'all',
+         listener: elShapeModel.on('all', '**', function () {
+            console.log(arguments);
+         })
+      });
+      */
    };
 
    if (_this.modelReady && el.modelReady) {
@@ -392,36 +399,30 @@ Workspace.prototype.removeElement = function(param) {
    });
 
    /**/
-//   els.forEach(function(el) {
    for (i = 0; i < els.length; i++) {
       el = els[i];
       el.removeParent(_this);
 
       updater = _this._innerUpdaters[el.id];
-      if (el.modelReady) {
+      if (_this.modelReady && el.modelReady) {
          for (j = 0; j < updater.listeners.length; j++) {
             listener = updater.listeners[j];
             model.removeListener(listener.ev, listener.listener);
          }
-      } else {
-         if (el.type === util.WORKSPACE_TYPE) {
-            el.removeListener(WORKSPACE_EVENTS.modelFetched, updater);
-         } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
-            el.removeListener(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
-         }
-      }
-
-      /*
-      if (_this.modelReady && el.modelReady) {
       } else if (_this.modelReady && !el.modelReady) {
+         if (el.type === util.WORKSPACE_TYPE) {
+            el.off(WORKSPACE_EVENTS.modelFetched, updater);
+         } else if (el.type === util.WORKSPACE_OBJECT_TYPE) {
+            el.off(WORKSPACE_OBJECT_EVENTS.modelFetched, updater);
+         }
       } else if (!_this.modelReady && el.modelReady) {
+         _this.off(WORKSPACE_EVENTS.modelFetched, updater);
       } else if (!_this.modelReady && !el.modelReady) {
+
       }
-      */
 
       delete _this._innerUpdaters[el.id];
    }
-//   });
    /**/
 
    this.updateModel('inner', util.map(this.inner, util.getID));
@@ -442,6 +443,11 @@ Workspace.prototype.removeClient = function(param) {
    removed.forEach(function(cl) { cl.removeWorkspace(this); });
 
    this.updateModel('clients', util.map(this.clients, util.getID));
+};
+Workspace.prototype.containsClient = function(param) {
+   return !!(util.find(this.clients, function (client) {
+      client.equal(param);
+   }));
 };
 Workspace.prototype.addParent = function(parent) {
    this.parent = parent;

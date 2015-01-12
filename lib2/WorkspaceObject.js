@@ -79,6 +79,8 @@ function WorkspaceObject(store, html) {
             } else {
                el = val;
             }
+
+            _this.emit(WORKSPACE_EVENTS.modelUpdated, null);
          }
       });
 

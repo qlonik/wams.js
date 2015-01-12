@@ -1,13 +1,13 @@
 WAMS = require('../../lib2');
 util = WAMS.util;
 
-mainWS = WAMS.Workspace(3000);
+mainWS = WAMS.Workspace(8947);
 clientWSs = [];
 bigPicture = WAMS.WorkspaceObject({
    tag: 'img',
    attr: {
       class: 'pic',
-      src: 'http://placekitten.com/1000/500'
+      src: 'http://placekitten.com/2001/1001'
    }
 });
 
@@ -42,6 +42,7 @@ function reorganize() {
 function addClientHandler(err, ws, client) {
    var clientWS = WAMS.Workspace();
 
+   clientWS.mergeShape({ w: 2000, h: 2000 });
    clientWS.mergeStyle({ background: 'blue' });
    clientWS.set('role', 'table');
    clientWS.set('index', clientWSs.length);
@@ -67,7 +68,7 @@ function removeClientHandler(err, ws, client) {
    reorganize();
 }
 
-mainWS.mergeShape({ w: 1500, h: 20000 });
+mainWS.mergeShape({ w: 6000, h: 20000 });
 mainWS.set('role', 'mainWS');
 mainWS.on(util.WORKSPACE_EVENTS.clientConnected, addClientHandler);
 mainWS.on(util.WORKSPACE_EVENTS.clientReady, readyClientHandler);

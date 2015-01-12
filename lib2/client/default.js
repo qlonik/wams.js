@@ -18,7 +18,7 @@ var
       width: 'w',
       height: 'h'
    },
-   DEBUG = false,
+   DEBUG = true,
    wams = new WAMS(),
    mts = [];
 
@@ -226,6 +226,7 @@ wams.on('workspaceAttached', function() {
                         listener = mt.modelListeners[k];
                         model.removeListener(listener.ev, listener.listener);
                      }
+                     mt.destroy();
                      el.parentElement.removeChild(el);
                   }
                }

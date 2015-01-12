@@ -72,6 +72,8 @@ function Client(store, socket) {
             } else {
                el = val;
             }
+
+            _this.emit(WORKSPACE_EVENTS.modelUpdated, null);
          }
       });
 

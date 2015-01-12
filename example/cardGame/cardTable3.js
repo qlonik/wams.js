@@ -3,7 +3,7 @@ util = WAMS.util;
 
 var MAX_HANDS = 4;
 
-mainWS = WAMS.Workspace(3000);
+mainWS = WAMS.Workspace(8948);
 tableWS = WAMS.Workspace();
 tableElement = WAMS.WorkspaceObject({
    tag: 'img',
@@ -144,6 +144,18 @@ function handlePan(err, target, data, ws, client) {
                console.log('target ' + target.id + ' entered ws ' + ws.id);
                ws.addElement(target);
             }
+            /*
+         } else {
+            if (
+               (tS.x > wsS.x + wsS.w) || //left border of target is behind right border of ws
+               (tS.y > wsS.y + wsS.h) || //top border of target is lower bottom border of ws
+               (tS.x + tS.w < wsS.x) ||  //right border of target is behind left border of ws
+               (tS.y + tS.h < wsS.y)     //bottom border of target is above top border of ws
+               ) {
+               console.log('target ' + target.id + ' left ws ' + ws.id);
+               ws.removeElement(target);
+            }
+            /**/
          }
       }
 

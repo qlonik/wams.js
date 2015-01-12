@@ -1,5 +1,5 @@
 //this is the card table exmaple
-include 'cardgame.js';							//gives access to objects for running the card game
+//include 'cardgame.js';							//gives access to objects for running the card game
 
 //on the server
 var MAX_HANDS = 4;
@@ -52,7 +52,7 @@ var addClientFunc = function(client, ws)
 			handWS[handCount].setLocation(0,tableWS.getHeight()/2);							//left
 		else if (handCount == 2)
 			handWS[handCount].setLocation(tableWS.getWidth()/2,0-client.getHeight());		//top
-		else if (handCount == 1)
+		else if (handCount == 3)
 			handWS[handCount].setLocation(tableWS.getWidth,tableWS.getHeight()/2);			//right
 
 		tableWorkspace.objectMovement(Workspace.CONTINUOUS);//this says that objects can be moved continuously from one edge to another, if there is a shared edge
@@ -68,7 +68,7 @@ var addClientFunc = function(client, ws)
 
 	else
 	{
-		client.sendErrorMsg("There are already 4 clients connected to this game. You have been disconnected.");
+		client.sendErrorMsg("There are already " + MAX_HANDS + " clients connected to this game. You have been disconnected.");
 		client.disconnect();
 	}
 
@@ -83,9 +83,9 @@ var removeClientFunc = function(client)
 var handleDrag = function(ws, event)
 {
 	//only objects can be moved, i.e. dragging on the empty workspace does nothing
-	if (typeof event.target is WorkspaceObject)	//might want to have a way to identify type of object
+	if (typeof event.target == WorkspaceObject)	//might want to have a way to identify type of object
 	{
 		//calculate movement
-		event.target.setPosition(..);	//simply update the position		
+//		event.target.setPosition(..);	//simply update the position
 	}	
 };
